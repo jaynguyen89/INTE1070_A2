@@ -1,0 +1,167 @@
+html {
+    min-height: 100%;
+    position: relative;
+    line-height: 1.15;
+}
+
+body {
+    margin: 0;
+    font-size: 20px;
+    font-family: 'Balsamiq Sans', cursive;
+}
+
+.inte-header {
+    width: 100%;
+    height: 5rem;
+    background-color: #2e87e6;
+    color: antiquewhite;
+    text-transform: uppercase;
+    font-weight: 600;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.footer {
+    width: 100%;
+    text-align: center;
+    left: 0;
+    bottom: 0;
+    position: absolute;
+    font-size: 1.2rem;
+    font-weight: 500;
+    line-height: 2rem;
+    overflow: hidden;
+    height: 2rem;
+    background-color: #2e87e6;
+    color: #FFF;
+}
+
+.login-area {
+    margin: 2rem 0;
+}
+
+.login-area h4, h6 {
+    text-align: center;
+}
+
+.login-row {
+    width: 60%;
+    margin: 1.5rem auto;
+}
+
+.icon-bar {
+    width: 100%;
+    overflow: auto;
+    margin-top: 1rem;
+}
+
+.icon-bar a {
+    float: left;
+    width: 33.333%;
+    text-align: center;
+    padding: 0.5rem 0;
+    transition: all 0.3s ease;
+    color: #0d6efd;
+    font-size: 3rem;
+}
+
+.icon-bar a span {
+    font-size: 1rem;
+}
+
+.error {
+    margin: 1rem;
+    line-height: 1.5rem;
+    font-size: 0.9rem;
+    color: #fd310d;
+    text-align: center;
+}
+
+.success {
+    margin: 1rem;
+    line-height: 1.5rem;
+    font-size: 0.9rem;
+    color: #008a22;
+    text-align: center;
+}
+
+.product-details {
+    margin: 1rem auto;
+    width: 60%;
+    background: #f5f5f5;
+    border-radius: 0.25rem;
+    padding: 1rem 1.5rem;
+}
+
+.stat-cell {
+    margin-bottom: 2rem;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    border: 1px solid lightgrey;
+}
+
+.goto-recaptcha {
+    width: 100%;
+    margin-top: 5rem;
+    text-align: center;
+}
+
+.subtitle {
+    margin-top: 0.25rem;
+    font-size: 0.85rem;
+}
+
+.instruction {
+    text-align: left !important;
+    margin-top: 1rem;
+}
+
+.pin-cell {
+    width: 4rem;
+    height: 6rem;
+    border: 2px solid #528dcc;
+    border-radius: 0.2rem;
+    padding-left: 1rem;
+    font-size: 3rem;
+    font-weight: 700;
+    font-family: courier, monospaced;
+    box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16), 0 2px 10px 0 rgba(0,0,0,0.12);
+}
+
+.pin-cell:focus {
+    border: 2px solid #e6a32e !important;
+}
+
+/* Hide the ugly up-down arrows on input[type=number] */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number] {
+    -moz-appearance:textfield;
+}
+
+input:disabled {
+    background-color: #ced4da;
+}
+
+.spinner {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    border: 3px solid #99caff;
+    border-radius: 50%;
+    border-top-color: #528dcc;
+    animation: spin 1s ease-in-out infinite;
+    -webkit-animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { -webkit-transform: rotate(360deg); }
+}
+@-webkit-keyframes spin {
+    to { -webkit-transform: rotate(360deg); }
+}
