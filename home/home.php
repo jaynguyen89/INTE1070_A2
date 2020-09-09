@@ -134,6 +134,8 @@ function getUserData() {
 
 mysqli_close($link);
 ?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -151,13 +153,14 @@ mysqli_close($link);
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/js/fontawesome.min.js"></script>
+    <script src="../assets/custom.js"></script>
 </head>
 <body>
 <div class="inte-header">
     <h2>INTE1070: Secure Electronic Commerce</h2>
 </div>
 
-<div class="container">
+<div class="container" style="margin-bottom: 80px">
     <?php if ($login_message) { ?>
         <div class="alert alert-success" style="margin-top: 1rem;"><?php echo $login_message; ?></div>
     <?php } ?>
@@ -166,9 +169,9 @@ mysqli_close($link);
     <h4>Welcome to our E-Commerce Site.</h4>
     <hr style="border: 1px solid #2e87e6; width: 35%;" />
 
+    <a class="btn btn-primary" href="../shop/browsing.php">Buy something</a>
 
-
-    <br />
+    <br /><br />
     <div>Here are your listings:</div>
 
     <div class="row" style="margin: 2.5rem auto;">
@@ -333,7 +336,7 @@ mysqli_close($link);
         </form>
     </div>
 
-    <a href="logout.php" class="btn btn-danger" style="margin-bottom: 2rem">
+    <a onclick="logout()" class="btn btn-danger" style="margin-bottom: 2rem">
         <i class="fas fa-sign-out-alt"></i> Sign Out
     </a>
 </div>

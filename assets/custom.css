@@ -165,3 +165,28 @@ input:disabled {
 @-webkit-keyframes spin {
     to { -webkit-transform: rotate(360deg); }
 }
+
+.a-button {
+    padding: 1.05rem 0.15rem;
+    border-radius: 0.2rem;
+}
+
+.a-button:hover {
+    background-color: #99caff;
+}
+
+.a-selected {
+    padding: 1.05rem 0.15rem;
+    border: 1px solid #528dcc;
+    border-radius: 0.2rem;
+    background-color: #99caff;
+}
+
+.payment-proceed {
+    width: 40rem;
+    padding: 0.5rem;
+    margin: 2rem auto;
+    border: 2px solid #00bd2c;
+    border-radius: 0.2rem;
+    background-color: #f7fff9;
+}

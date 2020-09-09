@@ -27,7 +27,7 @@ $password = array_key_exists('password', $_POST) ? $_POST["password"] : null;
 // Prepare a select statement
 $sql = "SELECT * FROM users WHERE email='$email'";
 
-$result = mysqli_query($link, $sql);//mysqli_query($link, $sql);
+$result = mysqli_query($link, $sql);
 $data = mysqli_fetch_array($result,MYSQLI_ASSOC);
 $count = mysqli_num_rows($result);
 
@@ -41,6 +41,7 @@ if ($count > 0) {
     $_SESSION["last_name"] = $data['last_name'];
     $_SESSION["email"] = $email;
     $_SESSION['user_id'] = $data['id'];
+    $_SESSION['username'] = $data['username'];
     $_SESSION['login_message'] = 'You have logged in successfully.';
 
     // Redirect user to welcome page
