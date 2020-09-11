@@ -84,6 +84,7 @@ if ($paypal_order_id && $authId) {
                           WHERE id = '.$inserted_payment_id;
 
                 if (mysqli_query($link, $query)) {
+                    //Read the purchased items to update products later
                     $purchased_items = array();
 
                     $query = 'SELECT I.product_id, I.quantity FROM shopping_carts C, cart_items I
@@ -93,6 +94,7 @@ if ($paypal_order_id && $authId) {
                     while ($item = mysqli_fetch_assoc($data))
                         array_push($purchased_items, $item);
 
+                    //Update the shopping cart (order) for the user
                     $query = 'UPDATE shopping_carts
                               SET payment_id = '.$inserted_payment_id.', isPaid = true
                               WHERE user_id = '.$user_id.' AND isPaid = false;';
