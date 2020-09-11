@@ -136,7 +136,7 @@ else {
                         <p>Please select a payment method below:</p>
                         <div class="row justify-content-center" id="payment-methods">
                             <div class="col-sm-1">
-                                <a class="a-button" role="button" id="visa" <?php if ($total) { ?>onclick="selectPaymentMethod('visa')"<?php } ?>>
+                                <a class="a-button" role="button" id="card" <?php if ($total) { ?>onclick="selectPaymentMethod('card')"<?php } ?>>
                                     <img class="img-fluid" src="../assets/logos/visa-card.png">
                                 </a>
                             </div>

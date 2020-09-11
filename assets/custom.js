@@ -149,8 +149,8 @@ function checkout() {
     localStorage.removeItem('PAYMENT_METHOD');
 
     let form = document.createElement('form');
-    form.action = 'paypal/checkout.php';
     form.method = 'post';
+    form.action = 'checkout_preprocess.php';
 
     let methodInput = document.createElement('input');
     methodInput.type = 'hidden';
