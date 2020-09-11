@@ -166,6 +166,14 @@ input:disabled {
     to { -webkit-transform: rotate(360deg); }
 }
 
+.a-header {
+    color: whitesmoke !important;
+}
+
+.a-header:hover {
+    color: #e6a32e !important;
+}
+
 .a-button {
     padding: 1.05rem 0.15rem;
     border-radius: 0.2rem;

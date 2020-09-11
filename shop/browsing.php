@@ -12,14 +12,34 @@ global $link;
 
 $user_id = $_SESSION['user_id'];
 
-$query = 'SELECT U.username, P.* FROM products P, users U
-          WHERE P.user_id = U.id AND P.stock > 0 AND P.user_id <> '.$user_id;
-
+//Retrieve cart data
+$query = 'SELECT I.product_id, I.quantity, P.product_name, P.unit_price
+          FROM shopping_carts C, cart_items I, products P
+          WHERE C.id = I.cart_id AND C.isPaid = false AND C.user_id = '.$user_id.' AND P.id = I.product_id;';
 $data = mysqli_query($link, $query);
 
-$all_listings = [];
-while ($listing = mysqli_fetch_assoc($data))
+$cart_items = array();
+$cart_total = 0;
+while ($item = mysqli_fetch_assoc($data)) {
+    array_push($cart_items, $item);
+    $cart_total += ($item['unit_price'] * $item['quantity']);
+}
+
+//Retrieve all listings
+$query = 'SELECT U.username, P.* FROM products P, users U
+          WHERE P.user_id = U.id AND P.stock > 0 AND P.user_id <> '.$user_id;
+$data = mysqli_query($link, $query);
+
+$all_listings = array();
+while ($listing = mysqli_fetch_assoc($data)) {
+    foreach ($cart_items as $item)
+        if ($listing['id'] == $item['product_id']) {
+            $listing['stock'] -= $item['quantity'];
+            break;
+        }
+
     array_push($all_listings, $listing);
+}
 
 function to_friendly_time($any) {
     $days = floor($any);
@@ -50,7 +70,7 @@ function to_friendly_time($any) {
 </head>
 <body>
 <div class="inte-header">
-    <h2>INTE1070: Secure Electronic Commerce</h2>
+    <h2><a class="a-header" href="../home/home.php">INTE1070</a>: Secure Electronic Commerce</h2>
 </div>
 
 <div class="container" style="margin-bottom: 80px">
@@ -64,14 +84,36 @@ function to_friendly_time($any) {
                 <h5 class="card-header"><i class="fas fa-cart-plus"></i>&nbsp;&nbsp;Your cart</h5>
                 <div class="card-body">
                     <div class="row" id="cart-items">
-                        <p style="margin: 1rem auto;" id="no-item">You have no item in your cart.</p>
+                        <?php if (count($cart_items) == 0) { ?>
+                            <p style="margin: 1rem auto;" id="no-item">You have no item in your cart.</p>
+                        <?php } else {?>
+                            <script type="text/javascript">
+                                document.ready(function () {
+                                    let cart = localStorage.hasOwnProperty('SHOPPING_CART') ? JSON.parse(localStorage.getItem('SHOPPING_CART')) : [];
+                                    <?php foreach ($cart_items as $item) { ?>
+                                        cart.push({ item : <?php $item['product_id'] ?>, qty : <?php $item['quantity'] ?> });
+                                    <?php } ?>
+                                });
+                            </script>
+                            <?php foreach ($cart_items as $item) { ?>
+                            <div class="col-sm-12" id="item<?php echo $item['product_id'] ?>">
+                                <p style="display: none;" id="item-id"><?php echo $item['product_id'] ?></p>
+                                <a class="text-danger" role="button" onclick="removeItemFromCart(<?php echo $item['product_id'] ?>)">
+                                    <i class="fas fa-times"></i>
+                                </a>&nbsp;
+                                <b><?php echo $item['product_name']; ?></b>
+                                <span class="float-right" id="item<?php echo $item['product_id'] ?>-subtotal">
+                                    $<?php echo $item['unit_price'] ?> x <?php echo $item['quantity'] ?>
+                                </span>
+                            </div>
+                        <?php }} ?>
                     </div>
                 </div>
                 <div class="card-footer">
                     <div class="row">
                         <div class="col-sm-12">
                             <b>Total:</b>
-                            <b class="float-right" id="total">$0</b>
+                            <b class="float-right" id="total">$<?php echo $cart_total; ?></b>
                         </div>
                         <div class="col-sm-12" style="margin-bottom: 1rem">
                             <p class="subtitle"> We accept the following payment methods:</p>
@@ -83,8 +125,8 @@ function to_friendly_time($any) {
                             </div>
                         </div>
                         <div class="col-sm-12">
-                            <a class="btn btn-primary float-right disabled" role="button" id="checkout-button"
-                                onclick="gotoCart()">
+                            <a class="btn btn-primary float-right <?php echo count($cart_items) == 0 ? 'disabled' : '' ?>"
+                               role="button" id="checkout-button" onclick="gotoCart()">
                                 <i class="fas fa-shopping-basket"></i>&nbsp;View Cart
                             </a>
                         </div>
@@ -112,15 +154,17 @@ function to_friendly_time($any) {
                                     </div>
                                     <div class="col-sm-12">
                                         <b>Stock:</b>
-                                        <span class="float-right" id="stock<?php echo $listing['id'] ?>"><?php echo $listing['stock']; ?> left</span>
+                                        <span class="float-right" id="stock<?php echo $listing['id'] ?>">
+                                            <?php echo $listing['stock'] == 0 ? 'Out of stock' : $listing['stock'].' left'; ?>
+                                        </span>
                                     </div>
                                     <div class="col-sm-12">
                                         <b>Price:</b>
                                         <span class="float-right" id="price<?php echo $listing['id'] ?>">$<?php echo $listing['unit_price']; ?></span>
                                     </div>
                                 </div>
-                                <a class="btn btn-primary float-right" role="button" id="btn<?php echo $listing['id'] ?>"
-                                   onclick="addItemToCart(<?php echo $listing['id'] ?>)">
+                                <a class="btn btn-primary float-right <?php echo $listing['stock'] == 0 ? 'disabled' : ''; ?>"
+                                   role="button" id="btn<?php echo $listing['id'] ?>" onclick="addItemToCart(<?php echo $listing['id'] ?>)">
                                     Add to cart&nbsp;<i class="fas fa-plus-circle"></i>
                                 </a>
                             </div>

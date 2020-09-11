@@ -6,7 +6,7 @@ function logout() {
 }
 
 function addItemToCart(itemId) {
-    let itemStock = $('#stock' + itemId).html();
+    let itemStock = $('#stock' + itemId).html().trim();
     let remaining = parseInt(itemStock.split(' ')[0]) - 1;
 
     if (remaining > 0) {
@@ -81,7 +81,7 @@ function calculateTotal() {
 
     let grandTotal = 0;
     for (let i = 0; i < allItems.length; i++) {
-        let subTotalLabel = allItems[i].getElementsByTagName('span')[0].innerHTML;
+        let subTotalLabel = allItems[i].getElementsByTagName('span')[0].innerHTML.trim();
         let price = parseInt(subTotalLabel.split(' x ')[0].slice(1));
         let quantity = parseInt(subTotalLabel.split(' x ')[1]);
 
@@ -95,12 +95,16 @@ function updateLocalStorageCart() {
     let allItems = document.getElementById('cart-items')
                            .getElementsByTagName('div');
 
-    let cart = [];
+    let cart = localStorage.hasOwnProperty('SHOPPING_CART') ? JSON.parse(localStorage.getItem('SHOPPING_CART')) : [];
     for (let i = 0; i < allItems.length; i++) {
         let itemId = allItems[i].getElementsByTagName('p')[0].innerHTML;
         let quantity = allItems[i].getElementsByTagName('span')[0].innerHTML.split(' x ')[1];
 
-        cart.push({ item : itemId, qty : quantity });
+        let entryIndex = -1;
+        cart.forEach(item => { if (item.item === itemId) entryIndex = cart.indexOf(item); });
+
+        if (entryIndex !== -1) cart.splice(entryIndex, 1);
+        cart.push({item: itemId, qty: quantity});
     }
 
     localStorage.setItem('SHOPPING_CART', JSON.stringify(cart));
@@ -109,6 +113,8 @@ function updateLocalStorageCart() {
 function gotoCart() {
     let cart = localStorage.getItem('SHOPPING_CART');
     let form = document.createElement('form');
+
+    localStorage.removeItem('SHOPPING_CART');
 
     form.action = 'cart_review.php';
     form.method = 'post';
@@ -125,7 +131,7 @@ function gotoCart() {
 
 function selectPaymentMethod(method) {
     let paymentMethods = document.getElementById('payment-methods')
-                                .getElementsByTagName('a');
+                                 .getElementsByTagName('a');
 
     for (let i = 0; i < paymentMethods.length; i++)
         if (paymentMethods[i].id === method)
@@ -139,25 +145,40 @@ function selectPaymentMethod(method) {
 }
 
 function checkout() {
-    let cart = localStorage.getItem('SHOPPING_CART');
     let paymentMethod = localStorage.getItem('PAYMENT_METHOD');
+    localStorage.removeItem('PAYMENT_METHOD');
 
     let form = document.createElement('form');
-    form.action = 'checkout.php';
+    form.action = 'paypal/checkout.php';
     form.method = 'post';
-
-    let cartInput = document.createElement('input');
-    cartInput.type = 'hidden';
-    cartInput.name = 'cart';
-    cartInput.value = cart;
 
     let methodInput = document.createElement('input');
     methodInput.type = 'hidden';
     methodInput.name = 'payment_method';
     methodInput.value = paymentMethod;
 
-    form.appendChild(cartInput);
     form.appendChild(methodInput);
+    document.body.append(form);
+    form.submit();
+}
+
+function invokeCaptureRequestForOrder(orderId, authId) {
+    let form = document.createElement('form');
+    form.action = 'capture.php';
+    form.method = 'post';
+
+    let orderIdInput = document.createElement('input');
+    orderIdInput.type = 'hidden';
+    orderIdInput.name = 'orderId';
+    orderIdInput.value = orderId;
+
+    let authIdInput = document.createElement('input');
+    authIdInput.type = 'hidden';
+    authIdInput.name = 'authId';
+    authIdInput.value = authId;
+
+    form.appendChild(orderIdInput);
+    form.appendChild(authIdInput);
 
     document.body.append(form);
     form.submit();

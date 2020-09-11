@@ -23,6 +23,8 @@ $searching = false;
 $listing_error = false;
 $listing_message = '';
 
+$pending_cart = ['any' => false];
+
 global $query;
 $query = '';
 
@@ -106,6 +108,13 @@ else {
     $result = getUserData();
     if (!is_array($result)) $search_error = $result;
     else $data = $result;
+
+    $query = 'SELECT SUM(I.quantity) as qty FROM shopping_carts C, cart_items I WHERE user_id = '.$_SESSION['user_id'].' AND payment_id IS NULL AND I.cart_id = C.id';
+    $result = mysqli_fetch_array(mysqli_query($link, $query));
+    if ($result['qty']) {
+        $pending_cart['any'] = true;
+        $pending_cart['qty'] = $result['qty'];
+    }
 }
 
 function getProducts($query) {
@@ -168,6 +177,13 @@ mysqli_close($link);
     <h2 style="margin-top: 2rem;">Hi, <?php echo $_SESSION["first_name"]." ".$_SESSION["last_name"]; ?></h2>
     <h4>Welcome to our E-Commerce Site.</h4>
     <hr style="border: 1px solid #2e87e6; width: 35%;" />
+
+    <?php if ($pending_cart['any']) { ?>
+        <div>You have <?php echo $pending_cart['qty']; ?> item(s) left in your Cart. Click the below button to view your item(s).</div>
+        <a class="btn btn-primary" href="../shop/cart_review.php">View My Cart</a>
+        <br /> <br />
+        <div>Otherwise, start browsing new items:</div>
+    <?php } else echo '<div>You are 1 click away from our great products:</div>'; ?>
 
     <a class="btn btn-primary" href="../shop/browsing.php">Buy something</a>
 
