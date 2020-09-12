@@ -183,3 +183,202 @@ function invokeCaptureRequestForOrder(orderId, authId) {
     document.body.append(form);
     form.submit();
 }
+
+function validateCardName() {
+    let name = $('#card-name').val();
+
+    if (name.length === 0) {
+        $('#name-error').remove();
+        $('#pay-button').addClass('disabled');
+    }
+    else {
+        let matched = /^[a-zA-Z ]+$/.test(name);
+
+        if (!matched) {
+            if (!$('#name-error').length) {
+                let nameError = document.createElement('p');
+                nameError.id = 'name-error';
+                nameError.innerHTML = 'Name on card can only contains alphabetical letters.';
+
+                $('#card-error').append(nameError);
+                $('#pay-button').addClass('disabled');
+            }
+            else return false;
+        }
+        else {
+            $('#name-error').remove();
+            return true;
+        }
+    }
+
+    return false;
+}
+
+function validateCardNumber() {
+    let num = $('#card-number').val();
+
+    if (num.length === 0) {
+        $('#num-error').remove();
+        $('#pay-button').addClass('disabled');
+    }
+    else {
+        let matched = /^[0-9 ]+$/.test(num);
+
+        if (!matched) {
+            if (!$('#num-error').length) {
+                let numError = document.createElement('p');
+                numError.id = 'num-error';
+                numError.innerHTML = 'Card Number only contains digits separated by spaces.';
+
+                $('#card-error').append(numError);
+                $('#pay-button').addClass('disabled');
+            }
+            else return false;
+        }
+        else {
+            let deSpaced = num.replace(/ /g,'');
+
+            if (deSpaced.length < 16) {
+                $('#num-error').remove();
+                $('#pay-button').addClass('disabled');
+            }
+            else if (deSpaced.length > 16) {
+                if (!$('#num-error').length) {
+                    $('#num-error').remove();
+
+                    let numError = document.createElement('p');
+                    numError.id = 'num-error';
+                    numError.innerHTML = 'Card Number is too long and invalid.';
+
+                    $('#card-error').append(numError);
+                    $('#pay-button').addClass('disabled');
+                }
+                else return false;
+            }
+            else if (deSpaced.length === 16) {
+                $('#num-error').remove();
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+function validateExpiryDate() {
+    let ex = $('#card-expiry').val();
+
+    if (ex.length === 0) {
+        $('#ex-error').remove();
+        $('#pay-button').addClass('disabled');
+    }
+    else {
+        let exError = document.createElement('p');
+        exError.id = 'ex-error';
+
+        if (ex.length !== 7) {
+            if (!$('#ex-error').length) {
+                exError.innerHTML = 'Expiry date format: mm/yyyy';
+
+                $('#card-error').append(exError);
+                $('#pay-button').addClass('disabled');
+            }
+            else return false;
+        }
+        else if (ex.length === 7) {
+            let matched = /^([0-9]{2})\/([0-9]{4})$/.test(ex);
+
+            if (!matched) {
+                if (!$('#ex-error').length) {
+                    exError.innerHTML = 'Expiry date format: mm/yyyy';
+
+                    $('#card-error').append(exError);
+                    $('#pay-button').addClass('disabled');
+                }
+                else return false;
+            }
+            else {
+                let year = parseInt(ex.split('/')[1]);
+
+                if (year < (new Date()).getFullYear()) {
+                    exError.innerHTML = 'Expiry date value ' + year + ' is invalid.';
+
+                    $('#ex-error').remove();
+                    $('#card-error').append(exError);
+                    $('#pay-button').addClass('disabled');
+                }
+                else {
+                    let month = parseInt(ex.split('/')[0]);
+
+                    if (year === (new Date()).getFullYear()) {
+                        if (month < (new Date()).getMonth()) {
+                            exError.innerHTML = 'Expiry date value ' + (month < 10 ? '0' + month : month) + ' is invalid.';
+
+                            $('#ex-error').remove();
+                            $('#card-error').append(exError);
+                            $('#pay-button').addClass('disabled');
+                        }
+                        else {
+                            $('#ex-error').remove();
+                            return true;
+                        }
+                    }
+                    else {
+                        $('#ex-error').remove();
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+
+    return false;
+}
+
+function validateCvv() {
+    let cvv = $('#card-cvv').val();
+
+    if (cvv.length === 0) {
+        $('#cvv-error').remove();
+        $('#pay-button').addClass('disabled');
+    }
+    else {
+        let matched = /^[0-9]{3}$/.test(cvv);
+        if (!matched) {
+            if (!$('#cvv-error').length) {
+                let cvvError = document.createElement('p');
+                cvvError.id = 'cvv-error';
+                cvvError.innerHTML = 'CVV must contains 3 digits.';
+
+                $('#card-error').append(cvvError);
+                $('#pay-button').addClass('disabled');
+            }
+            else return false;
+        }
+        else {
+            $('#cvv-error').remove();
+            return true;
+        }
+    }
+
+    return false;
+}
+
+function prettify() {
+    let num = $('#card-number').val();
+
+    let foo = num.split(" ").join("");
+    if (foo.length > 0) foo = foo.match(new RegExp('.{1,4}', 'g')).join(" ");
+
+    $('#card-number').val(foo);
+}
+
+function validateCardForm() {
+    let nameValid = validateCardName();
+    let numValid = validateCardNumber();
+    let exValid = validateExpiryDate();
+    let cvvValid = validateCvv();
+
+    if (nameValid && numValid && exValid && cvvValid) $('#pay-button').removeClass('disabled');
+    else $('#pay-button').addClass('disabled');
+}

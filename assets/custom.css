@@ -190,11 +190,9 @@ input:disabled {
     background-color: #99caff;
 }
 
-.payment-proceed {
-    width: 40rem;
-    padding: 0.5rem;
-    margin: 2rem auto;
-    border: 2px solid #00bd2c;
+.form-field {
+    border: 1px solid #e6a32e;
     border-radius: 0.2rem;
-    background-color: #f7fff9;
+    padding: 1.5rem 0;
+    margin: 1rem auto;
 }

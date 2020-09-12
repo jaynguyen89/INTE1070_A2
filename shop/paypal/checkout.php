@@ -63,10 +63,11 @@ else
                 <p>We find no item in your cart nor any payment information.</p>
                 <p>If you have come here somehow by mistake, please click <a href="../../home/home.php">here</a> to go back.</p>
             <?php } else { ?>
-                <div class="payment-proceed">
-                    <h2>Pay with Paypal</h2>
-                    <table class="table table-borderless">
-                        <tbody>
+                <div style="width: 70%; margin: auto">
+                    <div class="alert alert-info">
+                        <h2>Pay with Paypal</h2>
+                        <table class="table table-borderless">
+                            <tbody>
                             <tr>
                                 <td>Order Number:</td>
                                 <td><b><?php echo $order_number; ?></b></td>
@@ -87,9 +88,10 @@ else
                                 <td>Total Payable:</td>
                                 <td><b>$<?php echo ($grand_total + 8.95); ?> (including $<?php echo round(round($grand_total / 1.1, 2) * 0.1, 2); ?> GST)</b></td>
                             </tr>
-                        </tbody>
-                    </table>
-                    <div style="width: 60%; margin: auto;" id="paypal-button"></div>
+                            </tbody>
+                        </table>
+                        <div style="width: 60%; margin: auto;" id="paypal-button"></div>
+                    </div>
                 </div>
 
                 <script>
@@ -136,7 +138,7 @@ else
                             });
                         },
                         onError : function (error) {
-                            window.location.href = '/shop/paypal/error.php';
+                            window.location.href = 'error.php';
                         },
                         onCancel : function (response) {
                             alert('You have cancelled your payment. No charge was made. Please feel free to checkout at anytime.');

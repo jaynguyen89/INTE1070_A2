@@ -8,11 +8,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     exit;
 }
 
-require '../../vendor/autoload.php';
-
 $data = array_key_exists('checkout_data', $_SESSION) ? $_SESSION['checkout_data'] : null;
-
-
 
 $grand_total = 0;
 $order_number = '';
@@ -49,6 +45,9 @@ else $error = true;
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/js/fontawesome.min.js"></script>
     <script src="../../assets/custom.js"></script>
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?version=3.52.1&features=fetch"></script>
+    <script type="text/javascript" src="https://js.stripe.com/v3/"></script>
 </head>
 <body>
 <div class="inte-header">
@@ -66,7 +65,68 @@ else $error = true;
                 <p>We find no item in your cart nor any payment information.</p>
                 <p>If you have come here somehow by mistake, please click <a href="../../home/home.php">here</a> to go back.</p>
             <?php } else { ?>
+                <div style="width: 60%; margin: auto;">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="alert alert-info">
+                                <h2>Pay with Bank Cards</h2>
+                                <table class="table table-borderless" style="margin-top: 14px">
+                                    <tbody>
+                                    <tr>
+                                        <td>Order Number:</td>
+                                        <td><b><?php echo $order_number; ?></b></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Ship To:</td>
+                                        <td><b>123 Place St., Somewhere, VIC 3210</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Order Total:</td>
+                                        <td><b>$<?php echo $grand_total; ?></b></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Shipping Fee:</td>
+                                        <td><b>$8.95 (Australia Post Standard Flat Rate)</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Card Surcharge:</td>
+                                        <td><b>$<?php echo round($grand_total * 0.0125, 2); ?> (1.25% of Order Total)</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Total Payable:</td>
+                                        <td><b>$<?php echo round($grand_total*1.0125 + 8.95, 2); ?> (including $<?php echo round(round($grand_total / 1.1, 2) * 0.1, 2); ?> GST)</b></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
 
+                                <div class="btn btn-primary" id="pay-button" onclick="submitCard()">
+                                    <i class="fas fa-money-check-alt"></i>&nbsp;
+                                    Pay $<?php echo round($grand_total*1.0125 + 8.95, 2); ?>
+                                </div>
+                            </div>
+                        </div>
+
+                        <script type="text/javascript">
+                            function submitCard() {
+                                $('#pay-button').addClass('disabled');
+                                let stripe = Stripe('pk_test_51HQDZND2FG7NncIEj68F5ie7Yc6VKR7y5r0aMkoaf3OD5CUIcqHBCYq3Wb2biu3D1jie5wjUKdsfwh3kdWG6flgJ00KdGXIjMp');
+
+                                $.ajax({
+                                    url:'http://localhost:81/inte2/shop/card/capture.php',
+                                    type:'POST',
+                                    success: function(response) {
+                                        let session = JSON.parse(response);
+                                        return stripe.redirectToCheckout({ sessionId : session.id });
+                                    },
+                                    error: function () {
+                                        alert('Error occurred: We were unable to verify your card. Please try again.');
+                                        $('#pay-button').removeClass('disabled');
+                                    }
+                                });
+                            }
+                        </script>
+                    </div>
+                </div>
             <?php } ?>
         </div>
     </div>

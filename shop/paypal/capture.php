@@ -125,7 +125,7 @@ if ($paypal_order_id && $authId) {
     }
     else {
         $_SESSION['failure'] = 'verify_authorization';
-        //header('location: error.php');
+        header('location: error.php');
     }
 }
 else header('location: error.php');

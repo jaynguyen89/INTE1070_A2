@@ -45,31 +45,15 @@ $failure = array_key_exists('failure', $_SESSION) ? $_SESSION['failure'] : null;
                 <p>An error occurred while we were processing your payment for the order.</p>
                 <p>No charge has made on your Paypal account. Please go back to <a href="../cart_review.php">your cart</a> and try again.</p>
             <?php } else switch ($failure) {
-                case 'verify_authorization': ?>
-                    <p>An error occurred while we verify your payment for the order.</p>
-                    <p>Money have not been charged from your Paypal account. Please contact support and quote the following information to get help:</p>
-                    <?php break;
-                case 'insert_payments': ?>
-                    <p>An error occurred while we update your payment details into our system.</p>
-                    <p>Money have not been charged from your Paypal account. Please contact support and quote the following information to get help:</p>
-                    <?php break;
-                case 'payment_capture': ?>
-                    <p>An error occurred while we attempt to charge your Paypal account for the payment.</p>
-                    <p>Please do not go back to previous page. We're sorry for the inconvenience. Please contact support and quote the following information to get help:</p>
-                    <?php break;
-                case 'update_payments': ?>
-                    <p>An error occurred while we were update your payment details into our system.</p>
-                    <p>Money have been charged from your Paypal account and we know that. Please contact support and quote the following information to get help:</p>
-                    <?php break;
                 case 'charge_failed': ?>
                     <p>An error occurred while we were processing your payment.</p>
                     <p>Money have not been charged from your card. Please contact support and quote the following information to get help:</p>
                     <?php break;
-                default: //update_shopping_carts ?>
+                default: ?>
                     <p>An error occurred while we were update your payment details into our system.</p>
                     <p>Money have been charged from your Paypal account and we know that. Please contact support and quote the following information to get help:</p>
                     <?php break;
-                } ?>
+            } ?>
 
             <br/>
             <p>Error name: <b><?php echo $failure; ?></b></p>
