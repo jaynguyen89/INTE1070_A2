@@ -5,6 +5,7 @@ require '../../vendor/autoload.php';
 use Stripe\Charge;
 use Stripe\Checkout\Session;
 use Stripe\Customer;
+use Stripe\Exception\ApiErrorException;
 use Stripe\Stripe;
 
 session_start();
@@ -19,11 +20,9 @@ require_once '../../db_config.php';
 global $link;
 
 $data = array_key_exists('checkout_data', $_SESSION) ? $_SESSION['checkout_data'] : null;
-$stripeToken = array_key_exists('stripeToken', $_POST) ? $_POST['stripeToken'] : null;
-
-if ($data == null /*|| $stripeToken == null*/) {
+if ($data == null) {
     $_SESSION['failure'] = 'missing_data';
-    header('location: /inte2/shop/checkout-result/error.php');
+    header('location: error.php');
 }
 
 $checkout_data = json_decode($data, true);
@@ -46,7 +45,7 @@ $data = mysqli_query($link, $query);
 while ($item = mysqli_fetch_assoc($data))
     array_push($purchased_items, $item);
 
-$_SESSION['purchased_items'] = json_encode($items);
+$_SESSION['purchased_items'] = json_encode($purchased_items);
 
 Stripe::setApiKey('sk_test_51HQDZND2FG7NncIE67ajAx6FuANOhZQQVUrzM1j7CKk43zOzwXhmLwVXqLSu1SxvDxiQj5eLwbgJqDQC9ZAMiL8300Q2mnLvSi');
 
@@ -75,7 +74,7 @@ try {
         'success_url' => 'http://localhost:81/inte2/shop/card/success.php',
         'cancel_url' => 'http://localhost:81/inte2/shop/card/checkout.php',
     ]);
-} catch (Exception $e) {
+} catch (ApiErrorException $e) {
     $_SESSION['failure'] = 'charge_failed';
     header('location: error.php');
 }
