@@ -113,8 +113,11 @@ body {
 }
 
 .instruction {
+    font-size: 0.8rem;
     text-align: left !important;
-    margin-top: 1rem;
+    margin: 0.5rem;
+    width: inherit;
+    text-align-last: center;
 }
 
 .pin-cell {

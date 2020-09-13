@@ -121,7 +121,7 @@ function to_friendly_time($any) {
                                 <div class="col-sm-3"><img class="img-fluid" src="../assets/logos/visa-card.png"></div>
                                 <div class="col-sm-3"><img class="img-fluid" src="../assets/logos/paypal.png"></div>
                                 <div class="col-sm-3"><img class="img-fluid" src="../assets/logos/google-pay.png"></div>
-                                <div class="col-sm-3"><img class="img-fluid" src="../assets/logos/apply-pay.png"></div>
+                                <div class="col-sm-3"><img class="img-fluid" src="../assets/logos/alipay.png"></div>
                             </div>
                         </div>
                         <div class="col-sm-12">

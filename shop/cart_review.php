@@ -151,8 +151,8 @@ else {
                                 </a>
                             </div>
                             <div class="col-sm-1">
-                                <a class="a-button" role="button" id="apple" <?php if ($total) { ?>onclick="selectPaymentMethod('apple')"<?php } ?>>
-                                    <img class="img-fluid" src="../assets/logos/apply-pay.png">
+                                <a class="a-button" role="button" id="alipay" <?php if ($total) { ?>onclick="selectPaymentMethod('alipay')"<?php } ?>>
+                                    <img class="img-fluid" src="../assets/logos/alipay.png">
                                 </a>
                             </div>
                         </div>
