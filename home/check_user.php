@@ -42,10 +42,15 @@ if ($count > 0) {
     $_SESSION["email"] = $email;
     $_SESSION['user_id'] = $data['id'];
     $_SESSION['username'] = $data['username'];
+    $_SESSION['is_owner'] = $data['is_owner'];
     $_SESSION['login_message'] = 'You have logged in successfully.';
 
     // Redirect user to welcome page
-    header("location: home.php");
+    if (!$data['is_owner']) header('location: home.php');
+    else {
+        $_SESSION['public_key'] = $data['public_key'];
+        header('location: /inte2/admin/admin.php');
+    }
 } else {
     // Display an error message if password is not valid
     $email_err = "No account found with that email.";

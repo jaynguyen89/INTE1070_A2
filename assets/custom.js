@@ -1,8 +1,8 @@
-function logout() {
+function logout($isAdmin = false) {
     sessionStorage.clear();
     localStorage.clear();
 
-    window.location.href = 'logout.php';
+    window.location.href = $isAdmin ? '/inte2/home/logout.php' : 'logout.php';
 }
 
 function addItemToCart(itemId) {
@@ -184,6 +184,126 @@ function invokeCaptureRequestForOrder(orderId, authId) {
     form.submit();
 }
 
+function generateCryptoKeys(isChanging = false) {
+    if (!isChanging || (isChanging && confirm('You are changing your public-private keys pair. Continue?')))
+        $.ajax({
+            url: "http://localhost:81/inte2/admin/keys_generator.php",
+            method: 'GET',
+            success: function(response) {
+                let json_response = JSON.parse(response);
+
+                if (json_response.status === 'success') handleCryptoKeysResponse(json_response.privateKey);
+                else alert('Error: We encountered an issue while generating your keys. Please try again.');
+            },
+            error: function () {
+                alert('Error: We were unable to communicate with server at the moment. Please try again.');
+            }
+        });
+}
+
+function handleCryptoKeysResponse(privateKey) {
+    $('#generate-keys-btn').remove();
+    $('#crypto-keys-warning').remove();
+
+    download('private.pem', privateKey);
+
+    $('#crypto-keys-col').html('' +
+        '<div id="crypto-keys-show">' +
+            '<p class="subtitle text-success">' +
+                'Your public key has been saved to database successfully.<br/>' +
+                'Your private key has been downloaded to your local computer storage.<br/>' +
+                'Please save it securely. If you loose it, you have to generate another public-private keys pair.<br/>' +
+                'Please click the below button to close this message.' +
+            '</p>' +
+            '<div class="btn btn-warning" style="width: 20%" onclick="removeCryptoKeys()">Okay</div>' +
+        '</div>');
+}
+
+function removeCryptoKeys() {
+    $('#crypto-keys-show').remove();
+    $('#crypto-keys-col').html('' +
+        '<div class="alert alert-warning" id="crypto-keys-warning">' +
+            '<h5><i class="fas fa-exclamation-triangle"></i>&nbsp;Caution! Make sure you are not being watched.</h5>' +
+            '<p class="subtitle"><i class="fas fa-hand-point-right"></i>&nbsp;Are you in a public place, and/or using a public wifi network?</p>' +
+            '<p class="subtitle"><i class="fas fa-hand-point-right"></i>&nbsp;Is there any camera around you, including CCTVs, video recorders and mobile phones?</p>' +
+            '<p class="subtitle"><i class="fas fa-hand-point-right"></i>&nbsp;Is there any other people around you?</p>' +
+            '<p class="subtitle">' +
+                'If none of the above is true, then it would be safe to "Change" your keys.' +
+            '</p>' +
+        '</div>' +
+        '<div class="btn btn-primary" style="width: 20%" id="generate-keys-btn" onclick="generateCryptoKeys(true)">Change</div>');
+}
+
+function download(filename, text) {
+    const pom = document.createElement('a');
+    pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    pom.setAttribute('download', filename);
+
+    if (document.createEvent) {
+        const event = document.createEvent('MouseEvents');
+        event.initEvent('click', true, true);
+        pom.dispatchEvent(event);
+    }
+    else {
+        pom.click();
+    }
+}
+
+function verifyCheque(chequeId) {
+    $.ajax({
+        url: "http://localhost:81/inte2/bank/verify_signature.php?chequeId=" + chequeId,
+        method: 'GET',
+        success: function(response) {
+            if (response === 'error') alert ('Error: Database connection issue. Please try again.');
+
+            if (response === 'failed') {
+                $('#cheque-alert').html('Verification failed. This cheque was tampered.');
+                $('#cheque-alert').removeClass('alert-success').addClass('alert-danger');
+            }
+
+            if (response === 'success') {
+                $('#cheque-alert').removeClass('alert-danger').addClass('alert-success');
+                $('#cheque-alert').html('Verification success. You can approve this cheque.');
+                $('#approve-btn').removeClass('disabled');
+            }
+        },
+        error: function () {
+            alert('Error: We were unable to communicate with server at the moment. Please try again.');
+        }
+    });
+}
+
+function approveCheque(chequeId) {
+    $.ajax({
+        url: "http://localhost:81/inte2/bank/approve_cheque.php?chequeId=" + chequeId,
+        method: 'GET',
+        success: function(response) {
+            if (response === 'error') alert ('Error: Database connection issue. Please try again.');
+
+            if (response === 'failed') {
+                $('#cheque-alert').html('An error occurred while updating database. Please try again');
+                $('#cheque-alert').removeClass('alert-success').addClass('alert-danger');
+            }
+
+            if (response === 'success') {
+                $('#cheque-alert').removeClass('alert-danger').addClass('alert-success');
+                $('#cheque-alert').html('The cheque has been successfully approved.');
+                $('#approve-btn').remove();
+                $('#verify-btn').remove();
+            }
+        },
+        error: function () {
+            alert('Error: We were unable to communicate with server at the moment. Please try again.');
+        }
+    });
+}
+
+
+
+
+
+
+//These functions were intended to validate Bank Card details for user but no longer required
 function validateCardName() {
     let name = $('#card-name').val();
 

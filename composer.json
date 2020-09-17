@@ -1,5 +1,8 @@
 {
   "require": {
-    "stripe/stripe-php": "v7.52.0"
+    "stripe/stripe-php": "v7.52.0",
+    "ext-mysqli": "*",
+    "ext-json": "*",
+    "ext-openssl": "*"
   }
 }
