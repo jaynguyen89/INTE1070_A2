@@ -3,6 +3,7 @@
     "stripe/stripe-php": "v7.52.0",
     "ext-mysqli": "*",
     "ext-json": "*",
-    "ext-openssl": "*"
+    "ext-openssl": "*",
+    "ext-gmp": "*"
   }
 }

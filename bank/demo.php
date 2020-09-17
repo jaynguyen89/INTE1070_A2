@@ -129,6 +129,21 @@ if (array_key_exists('id', $_GET)) {
                 <a href="demo.php" class="btn btn-warning float-right">Close</a>
             </div>
         <?php } ?>
+
+
+        <br/><br/><br/>
+        <div class="btn btn-primary" onclick="run();">Test</div>
+        <script type="text/javascript">
+            function run() {
+                $.ajax({
+                    url: "http://localhost:81/inte2/rsa/keygen.php",
+                    method: 'GET',
+                    success: function(response) {
+                        console.log(response);
+                    }
+                });
+            }
+        </script>
     </div>
 </div>
 
