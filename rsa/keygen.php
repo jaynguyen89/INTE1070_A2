@@ -1,22 +1,67 @@
 <?php
 
-$prime_pair = get_two_random_primes(get_prime_numbers(200));
+$quantity = $_GET['quantity'];
 
-$p = $prime_pair[0];
-$q = $prime_pair[1];
+if ($quantity != 1) echo json_encode(compute_keys($quantity));
+else echo json_encode(compute_keys_single());
 
-$n = $p * $q;
-$o = ($p - 1) * ($q - 1);
 
-$e = compute_e($o);
 
-$d = compute_d($e, $o);
+function compute_keys($quantity = 1) {
+    $keys = array();
 
-echo json_encode(array('e' => $e, 'n' => $n, 'd' => $d));
+    $first_keys = compute_keys_single();echo json_encode($first_keys);
+    array_push($keys, $first_keys['n']);
+    array_push($keys, $first_keys['d']);
 
-function compute_e($o) {
-    $e = 1;
-    while ($o % $e == 0) $e++;
+    $turn = 1;
+    $e = $first_keys['e'];
+    $o = $first_keys['o'];
+
+    while ($turn < $quantity) {
+        $e = compute_e($o, $e + 1);
+        $d = compute_d($e, $o);
+
+        if ($e == $first_keys['n']) continue;
+
+        array_push($keys, $d);
+        $turn++;
+    }
+
+    $extra_e = 1;
+    foreach ($keys as $key) $extra_e *= $key;
+
+    $extra_d = compute_d($extra_e, $o);
+    array_push($keys, $extra_d);
+
+    return $keys;
+}
+
+function compute_keys_single() {
+    $e = 0;
+    $p = 0;
+    $q = 0;
+    $n = 0;
+
+    while ($e == $p || $e == $q || $e == $n) {
+        $prime_pair = get_two_random_primes(get_prime_numbers(100));
+
+        $p = $prime_pair[0];
+        $q = $prime_pair[1];
+
+        $n = $p * $q;
+        $o = ($p - 1) * ($q - 1);
+
+        $e = compute_e($o);
+        $d = compute_d($e, $o);
+    }
+
+    return array('e' => $e, 'n' => $n, 'd' => $d, 'o' => $o);
+}
+
+function compute_e($o, $min = 1) {
+    $e = $min;
+    while ($o % $e == 0 && $e < $o) $e++;
 
     return $e;
 }

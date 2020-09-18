@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>INTE1070</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Balsamiq+Sans&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" />
+    <link rel="stylesheet" href="../assets/custom.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/js/fontawesome.min.js"></script>
+</head>
+<body>
+<div class="inte-header">
+    <h2>INTE1070: Secure Electronic Commerce</h2>
+</div>
+
+<div class="container" style="margin-bottom: 80px">
+    <h2 style="margin-top: 2rem;">E-Commerce System</h2>
+    <hr style="border: 1px solid #2e87e6; width: 35%;" />
+
+    <div class="row">
+        <h4 style="margin-bottom: 20px"><b>Problem summary</b></h4>
+        <ul style="width: 90%; margin: auto;">
+            <li>A company wants to adopt a 3-tier client-server architecture as demonstrated below.</li>
+            <li>The computers (server nodes) used to build these servers have 80% reliability. The requirements on reliability for each server are 99.999% for Web server, 99.99% for Application server, 99.9% for Database server.</li>
+            <li>How many computers are needed for each server? How reliable is the whole system?</li>
+            <li>The company wants to minimize the investment, assuming the all computers used for building the system cost equally.</li>
+        </ul>
+
+        <img src="../assets/logos/three-tier-system.png" alt="Three Tier System" class="img-fluid" style="width: 60% !important; margin: 30px auto;" />
+
+        <h4><b>Consider possible designs</b></h4>
+
+        <h5 style="margin-bottom: 20px"><i class="fas fa-caret-right"></i>&nbsp;<b>Server nodes in Tandem routing</b></h5>
+        <img src="../assets/logos/tandem.png" alt="Tandem System" class="img-fluid" style="width: 60% !important; margin: 30px auto;" />
+
+        <p style="width: 100%; text-align: center;">The number of nodes required for <b>Web server</b> cluster to achieve 99.999% reliability:</p>
+        <img src="../assets/logos/web-tandem.png" alt="Tandem System" class="img-fluid" style="width: 17.5% !important; margin: 30px auto;" />
+
+        <p style="width: 100%; text-align: center;">The number of nodes required for <b>Application server</b> cluster to achieve 99.99% reliability:</p>
+        <img src="../assets/logos/app-tandem.png" alt="Tandem System" class="img-fluid" style="width: 17.5% !important; margin: 30px auto;" />
+
+        <p style="width: 100%; text-align: center;">The number of nodes required for <b>Database server</b> cluster to achieve 99.9% reliability:</p>
+        <img src="../assets/logos/db-tandem.png" alt="Tandem System" class="img-fluid" style="width: 17.5% !important; margin: 30px auto;" />
+
+        <p>After the above calculations, the number of required nodes is invalid,
+            meaning that there is no possible way to route the nodes in tandem routing to achieve the reliability requirements.</p>
+
+        <h5 style="margin-bottom: 20px"><i class="fas fa-caret-right"></i>&nbsp;<b>Server nodes in Parallel routing</b></h5>
+        <img src="../assets/logos/parallel.png" alt="Parallel System" class="img-fluid" style="width: 30% !important; margin: 30px auto;" />
+
+        <p style="width: 100%; text-align: center;">The number of nodes required for <b>Web server</b> cluster to achieve 99.999% reliability:</p>
+        <img src="../assets/logos/web-parallel.png" alt="Parallel System" class="img-fluid" style="width: 30% !important; margin: 30px auto;" />
+
+        <p style="width: 100%; text-align: center;">The number of nodes required for <b>Application server</b> cluster to achieve 99.99% reliability:</p>
+        <img src="../assets/logos/app-parallel.png" alt="Parallel System" class="img-fluid" style="width: 30% !important; margin: 30px auto;" />
+
+        <p style="width: 100%; text-align: center;">The number of nodes required for <b>Database server</b> cluster to achieve 99.9% reliability:</p>
+        <img src="../assets/logos/db-parallel.png" alt="Parallel System" class="img-fluid" style="width: 30% !important; margin: 30px auto;" />
+
+        <p>After the above calculations, the number of nodes required for Web Server is 8 computers;
+            the number of nodes required for Application Server is 6 computers;
+            the number of nodes required for Database Server is 5 computers.</p>
+        <p>The computers in each tier must be routed in parallel method.</p>
+
+        <p><b>Conclusion:</b></p>
+        <p style="width: 100%; text-align: center;">In the initial requirements, the reliability of the whole system is:</p>
+        <img src="../assets/logos/whole-system-initial.png" alt="Whole System" class="img-fluid" style="width: 25% !important; margin: 30px auto;" />
+
+        <p style="width: 100%; text-align: center;">In the proposed solution, the reliability of the whole system is:</p>
+        <img src="../assets/logos/whole-system-proposed.png" alt="Whole System" class="img-fluid" style="width: 33% !important; margin: 30px auto;" />
+
+        <h4 style="margin-bottom: 20px"><b>More discussion</b></h4>
+        <p>Since an E-commerce system is expected to serve reliably in long-term operation.
+           It should not only provide high availability, speed and accuracy, but also offer the ability to be scaled when business grows.
+            When scaling the system, it is essential to make sure that services are still accessible (ie. customers can still shop on the website
+            and other features work like normal). Although some downtimes may happen, but they should not occur frequently or take long.
+            Beside that, the costs and efforts for expanding system should not be significant,
+            meaning the architecture and design of the system must be relevant in long run.
+        </p>
+
+        <p>With parallel routing of the nodes for each server cluster, the system can warrant all of the above requirements.
+            If any node in the system (or each server cluster) malfunctions or becomes broken, it can be shut-downed and replaced
+            without affecting the services because other nodes are still available to process the requests.
+            When the business makes profits, and wants to improve their servers by replacing the 80%-reliable computers with
+            higher reliable ones or more energy efficient ones, they can swap the nodes at different times.
+        </p>
+
+        <p>As the reliability of each node is only 80%, so the likeliness that a node would fail is high if it receives high workload.
+            Therefore to further increase the reliability of the whole system, the company should have a Load Balancer cluster to
+            distribute requests evenly to each server and each node. In addition, the company can also use a Message Queue software to
+            deliver the work when there are available resources in the server/node while ensuring the priority of the tasks.
+        </p>
+    </div>
+
+    <br/><br/><br/>
+    <div class="login-row" style="text-align-last: center;">
+        <a href="../index.html" class="btn btn-secondary">Go Back</a>
+    </div>
+</div>
+
+<div class="footer">S3493188 Le Kim Phuc Nguyen</div>
+</body>
+</html>

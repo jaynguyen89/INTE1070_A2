@@ -136,7 +136,7 @@ if (array_key_exists('id', $_GET)) {
         <script type="text/javascript">
             function run() {
                 $.ajax({
-                    url: "http://localhost:81/inte2/rsa/keygen.php",
+                    url: "http://localhost:81/inte2/rsa/modulo.php?e=11&o=19",
                     method: 'GET',
                     success: function(response) {
                         console.log(response);

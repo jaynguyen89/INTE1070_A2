@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>INTE1070</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Balsamiq+Sans&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" />
+    <link rel="stylesheet" href="../assets/custom.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/js/fontawesome.min.js"></script>
+</head>
+<body>
+<div class="inte-header">
+    <h2>INTE1070: Secure Electronic Commerce</h2>
+</div>
+
+<div class="container" style="margin-bottom: 80px">
+    <h2 style="margin-top: 2rem;">Zero Knowledge Proof Protocol</h2>
+    <hr style="border: 1px solid #2e87e6; width: 35%;" />
+
+    <div class="row">
+        <h4 style="margin-bottom: 20px"><b>Problem summary</b></h4>
+        <ul style="width: 90%; margin: auto;">
+            <li>Assuming Alice wants to prove her identity <code>J = 59398</code> to the bank officer Bob.
+                The identity <code>J = 59398</code> could be an identifier that XYZ Bank issued to her when she opened an account.</li>
+            <li>Alice is unable to show her other identity proofs such as driver license or birth certificate.</li>
+            <li>The XYZ Bank is the trusted third party (TTP) who uses <b>Guillou-Quisquater Identification Scheme</b> as the ZKP protocol</li>
+            <li>* All random numbers in this solution are selected using Google Random Number Generator.</li>
+        </ul>
+
+        <img src="../assets/logos/ggrng.png" alt="Three Tier System" class="img-fluid ggrng" />
+
+        <h4><b>XYZ Bank (TTP) must prepare:</b></h4>
+        <ul style="width: 90%; margin: 20px auto;">
+            <li>A calculator that is capable of fast calculating modulus with large numbers.</li>
+            <li>A secured system to store the prime numbers for each ZKP process (Alice's case is one among many processes).</li>
+            <li>A secured communication method/protocol to transfer the modulo and keys to Alice and Bob.</li>
+            <li>For each ZKP process, the following prime numbers and modulo are required, taking Alice's case as an example:</li>
+        </ul>
+
+        <p style="width: 100%; text-align: center;">Two random prime numbers: <code>p = 751; q = 1229;</code></p>
+        <p style="width: 100%; text-align: center;">Compute: <code>n = p * q = 751 * 1229 = 922.979;</code></p>
+        <p style="width: 100%; text-align: center;">Compute: <code>&#8709; = (p - 1) * (q - 1) = 750 * 1228 = 921.000;</code></p>
+        <p style="width: 100%; text-align: center;">Select: <code>&#977; = 29029;</code> by GCD(&#977;; &#8709;) = 1 and &#977; &#8805; 3 (&#185;)</p>
+        <p style="width: 100%; text-align: center;">Compute: <img src="../assets/logos/zkp-s.png" class="img-fluid" style="width: 25%" /></p>
+        <p style="width: 100%; text-align: center;">Using Alice's identity <code>J = 59398</code>, compute: <code>s<sub>A</sub></code></p>
+        <img src="../assets/logos/zkp-sa.png"  class="img-fluid" style="width: 30%; margin: auto" />
+
+        <ul style="width: 90%; margin: 20px auto;">
+            <li>The bank now saves all the above values <code>p</code>, <code>q</code>, <code>n</code>, <code>&#8709;</code>, <code>&#977;</code>, <code>s</code>, <code>s<sub>A</sub></code> to their system.</li>
+            <li>Then the bank informs the officer Bob (the verifier) and Alice the values of (<code>&#977;</code>; <code>n</code>) = <code>(29029; 922979)</code>.</li>
+            <li>Also, the bank sends <code>s<sub>A</sub> = 382792</code> to Alice.</li>
+        </ul>
+
+        <div class="subtitle">
+            (&#185;) To correctly select <code>&#977;</code>, the following approach can be applied:
+            <ul style="width: 90%; margin: 20px auto;">
+                <li>Factor <code>&#8709;</code>: 1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 24, 25, 30, 40, 50, 60, 75, 100, 120, 125, 150, 200, 250, 300, 307, 375, 500, 600, 614, 750, 921, 1000, 1228, 1500, 1535, 1842, 2456, 3000, 3070, 3684, 4605, 6140, 7368, 7675, 9210, 12280, 15350, 18420, 23025, 30700, 36840, 38375, 46050, 61400, 76750, 92100, 115125, 153500, 184200, 230250, 307000, 460500, 921000.</li>
+                <li>Select prime numbers not in the factors list and multiply: <code>29029 = 7 * 11 * 13 * 29</code></li>
+            </ul>
+        </div>
+
+        <br/>
+        <h4><b>Bank officer Bob verifies Alice:</b></h4>
+        <ul style="width: 90%; margin: auto;">
+            <li>Alice choose a random integer number: <code>r = 82935;</code></li>
+            <li>Alice knowing (<code>&#977;</code>; <code>n</code>) calculates: <img src="../assets/logos/zkp-x.png" class="img-fluid" style="width: 30%" /></li>
+            <li>Alice now sends (<code>J</code>; <code>x</code>) = <code>(59398; 232221) to bank officer Bob.</code></li>
+            <li>Bank officer Bob sends back Alice a random integer number: <code>e = 57069;</code></li>
+            <li>Alice knowing <code>s<sub>A</sub> = 382792</code> calculates <code>y</code> as follow:<br/><img src="../assets/logos/zkp-y.png"  class="img-fluid" style="width: 30%; margin: 10px auto" /></li>
+            <li>Alice sends <code>y = 60490</code> to bank officer Bob.</li>
+            <li>Bank officer Bob having (<code>J</code>; <code>v</code>; <code>y</code>) calculates <code>z</code> as follow:<br/><img src="../assets/logos/zkp-z.png"  class="img-fluid" style="width: 30%; margin: 10px auto" /></li>
+            <li>Since <code>z = x = 232221</code>, bank officer accepts Alice's proof of her identity.</li>
+        </ul>
+
+        <h4 style="margin-top: 20px"><b>Trusted Third Party must prepare before the process:</b></h4>
+        <p>In addition to the above 2 critical requirements, there are a lot more that a TTP must prepare:</p>
+        <ul style="width: 90%; margin: auto;">
+            <li>A policy for key revocation when a verification or authentication process has completed, or an event of suspicious activity occurred, or when user require.</li>
+            <li>Make the ZKP process traceable by adding timestamps and endpoint of the retriever to the keys and requests.</li>
+            <li>Ensure real-time service that user (Bob, Alice) can communicate to validate their messages at any time.</li>
+            <li>Support for auditing and monitoring the transfer of data to ensure the keys are only delivered to the correct user.</li>
+        </ul>
+
+        <div class="instruction">European Telecommunications Standards Institute (ETSI) 1997. <em>"Telecommunications Security; Trusted Third Parties (TTP); Requirements for TTP Services"</em>. ETSI, Valbonne, France. <span>https://www.etsi.org/deliver/etsi_eg/201000_201099/201057/01.01.02_60/eg_201057v010102p.pdf</span></div>
+    </div>
+
+    <br/><br/><br/>
+    <div class="login-row" style="text-align-last: center;">
+        <a href="../index.html" class="btn btn-secondary">Go Back</a>
+    </div>
+</div>
+
+<div class="footer">S3493188 Le Kim Phuc Nguyen</div>
+</body>
+</html>
