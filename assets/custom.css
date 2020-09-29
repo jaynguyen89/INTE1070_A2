@@ -366,3 +366,7 @@ input:disabled {
     width: 40% !important;
     margin: 30px auto;
 }
+
+.form-check .form-check-input {
+    float: none !important;
+}

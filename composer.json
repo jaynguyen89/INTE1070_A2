@@ -4,6 +4,7 @@
     "ext-mysqli": "*",
     "ext-json": "*",
     "ext-openssl": "*",
-    "ext-gmp": "*"
+    "ext-gmp": "*",
+    "ext-bcmath": "*"
   }
 }

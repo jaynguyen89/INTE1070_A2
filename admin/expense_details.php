@@ -22,22 +22,38 @@ $result = mysqli_query($link, $query);
 $expense = mysqli_fetch_array($result, MYSQLI_ASSOC);
 
 $sign_result = false;
-if (array_key_exists('sign_expense', $_POST) && $_FILES['signKey']) {
-    $private_key = file_get_contents($_FILES['signKey']['tmp_name']);
-    $signature = sign_cheque_personally($expense['payee'], $expense['amount'], $private_key);
+if (array_key_exists('sign_expense', $_POST)) {
+
+    if (!$expense['multisig']) {
+        $private_key = file_get_contents($_FILES['signKey']['tmp_name']);
+        $signature = sign_cheque_personally($expense['payee'], $expense['amount'], $private_key);
+    }
+    else $signature = sign_cheque_multisig($expense_id);
 
     if ($signature) {
-        $query = 'INSERT INTO agreements (signed_id, expense_id, signature)
-                  VALUES ('.$user_id.', '.$expense_id.', \''.$signature.'\');';
+        if (!$expense['multisig'])
+            $query = 'INSERT INTO agreements (signed_id, expense_id, signature)
+                      VALUES ('.$user_id.', '.$expense_id.', \''.$signature.'\');';
+        else
+            $query = 'INSERT INTO agreements (signed_id, expense_id, key_id, signature)
+                      VALUES ('.$user_id.', '.$expense_id.', '.$signature['key_id'].', \''.$signature['sig'].'\');';
 
         if (mysqli_query($link, $query)) {
-            $sign_result = true;
-            unlink($_FILES['signKey']['tmp_name']);
-            unset($_POST['signKey']);
+            $insert_id = mysqli_insert_id($link);
+
+            if (!$expense['multisig']) {
+                $sign_result = true;
+                unlink($_FILES['signKey']['tmp_name']);
+                unset($_POST['signKey']);
+            }
+            else {
+                $query = 'UPDATE agreements SET signature = '.$signature['sig'].' WHERE expense_id = '.$expense_id.' AND id <> '.$insert_id;
+                if (mysqli_query($link, $query)) $sign_result = true;
+            }
         }
     }
 
-    if (!$sign_result) unlink($_FILES['signKey']['tmp_name']);
+    if (!$sign_result && array_key_exists('signKey', $_FILES) && $_FILES['signKey']['tmp_name']) unlink($_FILES['signKey']['tmp_name']);
 }
 
 $query = 'SELECT A.*, U.first_name, U.last_name, U.username FROM agreements A, users U WHERE expense_id = '.$expense_id;
@@ -66,15 +82,21 @@ $result = mysqli_fetch_array(mysqli_query($link, $query), MYSQLI_ASSOC);
 
 $has_key = $result['public_key'] != null;
 
-$query = 'SELECT signature FROM agreements WHERE expense_id = '.$expense_id;
+$query = !$expense['multisig'] ? 'SELECT signature FROM agreements WHERE expense_id = '.$expense_id
+                               : 'SELECT signature, MAX(signed_on) FROM agreements WHERE expense_id = '.$expense_id;
 $result = mysqli_query($link, $query);
 
 $signatures = array();
 while ($signature = mysqli_fetch_assoc($result)) {
-    $sig = file_get_contents($_SERVER['DOCUMENT_ROOT'].'/inte2/assets/security/'.$signature['signature']);
-    $sig = base64_encode($sig);
+    if (!$expense['multisig']) {
+        $sig = file_get_contents($_SERVER['DOCUMENT_ROOT'] . '/inte2/assets/security/' . $signature['signature']);
+        $sig = base64_encode($sig);
 
-    array_push($signatures, substr($sig, rand(0, strlen($sig) - 62), 60));
+        array_push($signatures, substr($sig, rand(0, strlen($sig) - 62), 60));
+        continue;
+    }
+
+    array_push($signatures, hash('sha256', $signature['signature']));
 }
 ?>
 
@@ -145,20 +167,23 @@ while ($signature = mysqli_fetch_assoc($result)) {
             <?php if ($has_key) { ?>
                 <div class="col-sm-12">
                     <form method="post" action="expense_details.php?id=<?php echo $expense_id; ?>"
-                          style="width: 50%; margin: auto;" enctype="multipart/form-data">
-                        <div class="form-group">
-                            <label for="signKey">Your private key file:</label>
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                            <span class="input-group-text">
-                                                <i class="fas fa-key" style="font-size: 25px; line-height: 30px"></i>
-                                            </span>
+                          style="width: 50%; margin: auto;" enctype="multipart/form-data" novalidate>
+                        <?php if (!$expense['multisig']) { ?>
+                            <div class="form-group">
+                                <label for="signKey">Your private key file:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-key" style="font-size: 25px; line-height: 30px"></i>
+                                        </span>
+                                    </div>
+                                    <input name="signKey" id="signKey" required type="file" class="form-control">
                                 </div>
-                                <input name="signKey" id="signKey" required type="file" class="form-control">
                             </div>
+                        <?php } ?>
+                        <div class="col-sm-12 text-center" style="margin-top: 20px;">
+                            <input name="sign_expense" value="Sign this cheque" type="submit" class="btn btn-primary" />
                         </div>
-                        <br/>
-                        <input name="sign_expense" value="Sign this cheque" type="submit" class="btn btn-primary" />
                     </form>
                 </div>
             <?php } else { ?>
@@ -166,7 +191,11 @@ while ($signature = mysqli_fetch_assoc($result)) {
                     You need to sign this cheque, however, you have not had a public-private keys pair.<br/>
                     Please go back to your Admin page to generate keys.
                 </div>
-        <?php }} else echo '<div class="subtitle text-center" style="width: 50%; color: #008a22; margin: auto;">Your have signed this cheque.</div>'; ?>
+        <?php }} else
+            echo '<div class="subtitle text-center" style="width: 50%; color: #008a22; margin: auto;">
+                    '.($expense['is_approved'] ? 'This cheque has been approved by the bank.' : 'You have signed this cheque').'
+                  </div>';
+        ?>
     </div>
 
     <br /><br />

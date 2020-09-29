@@ -18,34 +18,38 @@ unset($_SESSION['login_message']);
 
 $user_id = $_SESSION['user_id'];
 $create_result = false;
-$message = '';
-if (array_key_exists('create-expense', $_POST) && $_FILES['signKey']) {
+
+if (array_key_exists('create-expense', $_POST)) {
     $query = 'INSERT INTO expenses (user_id, payee, amount, in_words, description)
               VALUES ('.$user_id.', \''.$_POST['payee'].'\', '.$_POST['amount'].', \''.$_POST['in-words'].'\', \''.$_POST['description'].'\');';
 
     if (mysqli_query($link, $query)) {
-        $private_key = file_get_contents($_FILES['signKey']['tmp_name']);
-        if ($private_key) {
-            $expense_id = mysqli_insert_id($link);
-            $signature = sign_cheque_personally($_POST['payee'], $_POST['amount'], $private_key);
+        $expense_id = mysqli_insert_id($link);
+        $multisig = array_key_exists('multisig', $_POST) && $_POST['multisig'] == 'on';
 
-            if ($signature) {
+        $signature = $multisig ? sign_cheque_multisig($expense_id) : sign_cheque_separately();
+        $create_result = $signature != null;
+
+        if ($create_result) {
+            if ($multisig)
+                $query = 'INSERT INTO agreements (signed_id, expense_id, key_id, signature)
+                          VALUES ('.$_SESSION['user_id'].', '.$expense_id.', '.$signature['key_id'].', \''.$signature['sig'].'\');';
+            else
                 $query = 'INSERT INTO agreements (signed_id, expense_id, signature)
-                      VALUES (' . $user_id . ', ' . $expense_id . ', \''.$signature.'\');';
+                          VALUES ('.$_SESSION['user_id'].', '.$expense_id.', \''.$signature.'\');';
 
-                if (mysqli_query($link, $query)) {
-                    $create_result = true;
+            if (mysqli_query($link, $query)) {
+                if (array_key_exists('signKey', $_FILES) && $_FILES['signKey']['tmp_name']) {
                     unlink($_FILES['signKey']['tmp_name']);
                     unset($_FILES['signKey']);
-                } else {
-                    $query = 'DELETE FROM expenses WHERE id = ' . $expense_id;
-                    mysqli_query($link, $query);
                 }
+            } else {
+                $query = 'DELETE FROM expenses WHERE id = '.$expense_id;
+                mysqli_query($link, $query);
             }
         }
     }
-
-    if (!$create_result) unlink($_FILES['signKey']['tmp_name']);
+    else unlink($_FILES['signKey']['tmp_name']);
 }
 
 $query = 'SELECT COUNT(*) as owner_count FROM users WHERE is_owner = true';
@@ -87,6 +91,11 @@ function filter_expenses($expense) {
     if ($sign_count < $owner_count) array_push($pending_expenses, $expense);
     else if ($expense['is_approved']) array_push($completed_expenses, $expense);
     else array_push($in_review_expenses, $expense);
+}
+
+function sign_cheque_separately() {
+    $private_key = array_key_exists('signKey', $_FILES) ? file_get_contents($_FILES['signKey']['tmp_name']) : null;
+    return $private_key ? sign_cheque_personally($_POST['payee'], $_POST['amount'], $private_key) : null;
 }
 
 function display_expense($expense) {
@@ -195,7 +204,7 @@ function display_expense($expense) {
                         </span>
                     </button>
                 </div>
-                <form method="post" action="admin.php" class="form-group row" enctype="multipart/form-data">
+                <form method="post" action="admin.php" class="form-group row" enctype="multipart/form-data" novalidate>
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-md-6 col-sm-12" style="margin-bottom: 7px;">
@@ -246,7 +255,13 @@ function display_expense($expense) {
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-sm-12" style="margin-bottom: 7px;">
+                            <div class="col-sm-12 text-center" style="margin-bottom: 7px;">
+                                <label class="form-check checkbox-inline">
+                                    <input id="multisig" name="multisig" type="checkbox" class="form-check-input" onclick="handleMultisigCheckbox()">
+                                    &nbsp;<span id="multisig-label">Sign cheque with separate signature</span>
+                                </label>
+                            </div>
+                            <div id="signature-selector" class="col-sm-12" style="margin-bottom: 7px;">
                                 <div class="form-group">
                                     <label for="signKey">Your private key file:</label>
                                     <div class="input-group">

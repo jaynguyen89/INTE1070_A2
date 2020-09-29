@@ -21,19 +21,27 @@ if (array_key_exists('id', $_GET)) {
     $result = mysqli_query($link, $query);
     $selected_cheque = mysqli_fetch_array($result, MYSQLI_ASSOC);
 
-    $query = 'SELECT signature, signed_on FROM agreements WHERE expense_id = '.$_GET['id'];
+    $query = !$selected_cheque['multisig'] ? 'SELECT signature, signed_on FROM agreements WHERE expense_id = '.$_GET['id']
+                                           : 'SELECT signature, MAX(signed_on) AS signed_on FROM agreements WHERE expense_id ='.$_GET['id'];
     $result = mysqli_query($link, $query);
 
     $last_signed_on = strtotime("01-01-2000");
     $signatures = array();
     while ($signature = mysqli_fetch_assoc($result)) {
-        $sig = file_get_contents($_SERVER['DOCUMENT_ROOT'].'/inte2/assets/security/'.$signature['signature']);
-        $sig = base64_encode($sig);
+        if (!$selected_cheque['multisig']) {
+            $sig = file_get_contents($_SERVER['DOCUMENT_ROOT'] . '/inte2/assets/security/' . $signature['signature']);
+            $sig = base64_encode($sig);
 
-        array_push($signatures, substr($sig, rand(0, strlen($sig) - 62), 60));
+            array_push($signatures, substr($sig, rand(0, strlen($sig) - 62), 60));
 
-        if (strtotime($signature['signed_on']) > $last_signed_on)
-            $last_signed_on = strtotime($signature['signed_on']);
+            if (strtotime($signature['signed_on']) > $last_signed_on)
+                $last_signed_on = strtotime($signature['signed_on']);
+
+            continue;
+        }
+
+        array_push($signatures, hash('sha256', $signature['signature']));
+        $last_signed_on = strtotime($signature['signed_on']);
     }
 }
 ?>
@@ -123,27 +131,12 @@ if (array_key_exists('id', $_GET)) {
             <div class="col-sm-12" style="width: 70%; margin: auto;">
                 <div class="alert text-center" id="cheque-alert"></div>
 
-                <div class="btn btn-primary" id="verify-btn" onclick="verifyCheque(<?php echo $selected_cheque['id']; ?>);">Verify</div>
+                <div class="btn btn-primary" id="verify-btn" onclick="verifyCheque(<?php echo $selected_cheque['id']; ?>, <?php echo $selected_cheque['multisig'] ?>);">Verify</div>
                 <div class="btn btn-primary disabled" id="approve-btn" onclick="approveCheque(<?php echo $selected_cheque['id']; ?>);">Approve</div>
 
                 <a href="demo.php" class="btn btn-warning float-right">Close</a>
             </div>
         <?php } ?>
-
-
-        <br/><br/><br/>
-        <div class="btn btn-primary" onclick="run();">Test</div>
-        <script type="text/javascript">
-            function run() {
-                $.ajax({
-                    url: "http://localhost:81/inte2/rsa/modulo.php?e=11&o=19",
-                    method: 'GET',
-                    success: function(response) {
-                        console.log(response);
-                    }
-                });
-            }
-        </script>
     </div>
 </div>
 

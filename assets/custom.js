@@ -249,9 +249,12 @@ function download(filename, text) {
     }
 }
 
-function verifyCheque(chequeId) {
+function verifyCheque(chequeId, multisig) {
+    let endPoint = multisig === 1 ? 'http://localhost:81/inte2/rsa/signer.php?chequeId='
+                                  : 'http://localhost:81/inte2/bank/verify_signature.php?chequeId=';
+
     $.ajax({
-        url: "http://localhost:81/inte2/bank/verify_signature.php?chequeId=" + chequeId,
+        url: endPoint + chequeId,
         method: 'GET',
         success: function(response) {
             if (response === 'error') alert ('Error: Database connection issue. Please try again.');
@@ -298,6 +301,16 @@ function approveCheque(chequeId) {
     });
 }
 
+function handleMultisigCheckbox() {
+    if ($('#multisig').prop('checked')) {
+        $('#multisig-label').html('Sign cheque with multi-signature');
+        $('#signature-selector').hide();
+    }
+    else {
+        $('#multisig-label').html('Sign cheque with separate signatures.');
+        $('#signature-selector').show();
+    }
+}
 
 
 
