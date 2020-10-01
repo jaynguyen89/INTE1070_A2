@@ -42,8 +42,8 @@ if (!$error) {
             break;
         }
 
-        $pbk = file_get_contents($_SERVER['DOCUMENT_ROOT'] . '/inte2/assets/security/' . $pbk_fname);
-        $sig = file_get_contents($_SERVER['DOCUMENT_ROOT'] . '/inte2/assets/security/' . $signature);
+        $pbk = file_get_contents($_SERVER['DOCUMENT_ROOT'] . '/assets/security/' . $pbk_fname);
+        $sig = file_get_contents($_SERVER['DOCUMENT_ROOT'] . '/assets/security/' . $signature);
 
         $verified = openssl_verify($message, $sig, $pbk, "sha256WithRSAEncryption");
     }

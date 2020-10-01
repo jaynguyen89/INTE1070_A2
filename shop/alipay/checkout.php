@@ -129,7 +129,7 @@ else
                             amount: <?php echo ($grand_total + 8.95) * 100; ?>,
                             currency: 'AUD',
                             redirect: {
-                                return_url: 'http://localhost:81/inte2/shop/alipay/checkout.php?payment_authorized=true',
+                                return_url: 'http://localhost:81/shop/alipay/checkout.php?payment_authorized=true',
                             }
                         }).then(function (result) {
                             if (result.error) {

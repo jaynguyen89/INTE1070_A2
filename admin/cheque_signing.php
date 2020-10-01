@@ -12,7 +12,7 @@ function sign_cheque_personally($payee, $amount, $privateKey) {
     openssl_sign($message, $signature, $privateKey, OPENSSL_ALGO_SHA256);
     $sig_fname = 'sig_'.md5(time()).'.dat';
 
-    $file_path = $_SERVER['DOCUMENT_ROOT'].'/inte2/assets/security/'.$sig_fname;
+    $file_path = $_SERVER['DOCUMENT_ROOT'].'/assets/security/'.$sig_fname;
     $file = fopen($file_path, 'w');
 
     if ($file) {

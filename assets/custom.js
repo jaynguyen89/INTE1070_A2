@@ -2,7 +2,7 @@ function logout($isAdmin = false) {
     sessionStorage.clear();
     localStorage.clear();
 
-    window.location.href = $isAdmin ? '/inte2/home/logout.php' : 'logout.php';
+    window.location.href = $isAdmin ? '/home/logout.php' : 'logout.php';
 }
 
 function addItemToCart(itemId) {
@@ -187,7 +187,7 @@ function invokeCaptureRequestForOrder(orderId, authId) {
 function generateCryptoKeys(isChanging = false) {
     if (!isChanging || (isChanging && confirm('You are changing your public-private keys pair. Continue?')))
         $.ajax({
-            url: "http://localhost:81/inte2/admin/keys_generator.php",
+            url: "http://localhost:81/admin/keys_generator.php",
             method: 'GET',
             success: function(response) {
                 let json_response = JSON.parse(response);
@@ -250,8 +250,8 @@ function download(filename, text) {
 }
 
 function verifyCheque(chequeId, multisig) {
-    let endPoint = multisig === 1 ? 'http://localhost:81/inte2/rsa/signer.php?chequeId='
-                                  : 'http://localhost:81/inte2/bank/verify_signature.php?chequeId=';
+    let endPoint = multisig === 1 ? 'http://localhost:81/rsa/signer.php?chequeId='
+                                  : 'http://localhost:81/bank/verify_signature.php?chequeId=';
 
     $.ajax({
         url: endPoint + chequeId,
@@ -278,7 +278,7 @@ function verifyCheque(chequeId, multisig) {
 
 function approveCheque(chequeId) {
     $.ajax({
-        url: "http://localhost:81/inte2/bank/approve_cheque.php?chequeId=" + chequeId,
+        url: "http://localhost:81/bank/approve_cheque.php?chequeId=" + chequeId,
         method: 'GET',
         success: function(response) {
             if (response === 'error') alert ('Error: Database connection issue. Please try again.');

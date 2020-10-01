@@ -112,7 +112,7 @@ else $error = true;
                                 let stripe = Stripe('pk_test_51HQDZND2FG7NncIEj68F5ie7Yc6VKR7y5r0aMkoaf3OD5CUIcqHBCYq3Wb2biu3D1jie5wjUKdsfwh3kdWG6flgJ00KdGXIjMp');
 
                                 $.ajax({
-                                    url:'http://localhost:81/inte2/shop/card/capture.php',
+                                    url:'http://localhost:81/shop/card/capture.php',
                                     type:'POST',
                                     success: function(response) {
                                         let session = JSON.parse(response);

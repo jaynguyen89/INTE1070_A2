@@ -29,7 +29,7 @@ if (array_key_exists('id', $_GET)) {
     $signatures = array();
     while ($signature = mysqli_fetch_assoc($result)) {
         if (!$selected_cheque['multisig']) {
-            $sig = file_get_contents($_SERVER['DOCUMENT_ROOT'] . '/inte2/assets/security/' . $signature['signature']);
+            $sig = file_get_contents($_SERVER['DOCUMENT_ROOT'] . '/assets/security/' . $signature['signature']);
             $sig = base64_encode($sig);
 
             array_push($signatures, substr($sig, rand(0, strlen($sig) - 62), 60));

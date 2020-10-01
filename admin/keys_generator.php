@@ -11,7 +11,7 @@ $data = mysqli_fetch_array(mysqli_query($link, $query));
 
 $current_pkfile = $data['public_key'];
 if ($current_pkfile)
-    unlink($_SERVER['DOCUMENT_ROOT'].'/inte2/assets/security/'.$current_pkfile);
+    unlink($_SERVER['DOCUMENT_ROOT'].'/assets/security/'.$current_pkfile);
 
 $publicKey = '';
 $privateKey = '';
@@ -31,7 +31,7 @@ $response = array('status' => 'success');
 if ($response['status'] == 'success') {
     $file_name = md5(time()).'.pem';
 
-    $file_path = $_SERVER['DOCUMENT_ROOT'].'/inte2/assets/security/'.$file_name;
+    $file_path = $_SERVER['DOCUMENT_ROOT'].'/assets/security/'.$file_name;
     $file = fopen($file_path, 'w');
     if ($file) {
         fwrite($file, $publicKey);

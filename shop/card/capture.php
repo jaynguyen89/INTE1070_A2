@@ -71,8 +71,8 @@ try {
             'quantity' => $countAll,
         ]],
         'mode' => 'payment',
-        'success_url' => 'http://localhost:81/inte2/shop/card/success.php',
-        'cancel_url' => 'http://localhost:81/inte2/shop/card/checkout.php',
+        'success_url' => 'http://localhost:81/shop/card/success.php',
+        'cancel_url' => 'http://localhost:81/shop/card/checkout.php',
     ]);
 } catch (ApiErrorException $e) {
     $_SESSION['failure'] = 'charge_failed';

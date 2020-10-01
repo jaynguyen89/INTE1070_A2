@@ -3,11 +3,11 @@ session_start();
 
 // Check if the user is logged in, if not then redirect him to login page (index.html)
 if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
-    header("location: /inte2/index.html");
+    header("location: /index.html");
     exit;
 }
 
-if (!$_SESSION['is_owner']) header("location: /inte2/home/home.php");
+if (!$_SESSION['is_owner']) header("location: /home/home.php");
 
 require_once 'cheque_signing.php';
 require_once '../db_config.php';
@@ -89,7 +89,7 @@ $result = mysqli_query($link, $query);
 $signatures = array();
 while ($signature = mysqli_fetch_assoc($result)) {
     if (!$expense['multisig']) {
-        $sig = file_get_contents($_SERVER['DOCUMENT_ROOT'] . '/inte2/assets/security/' . $signature['signature']);
+        $sig = file_get_contents($_SERVER['DOCUMENT_ROOT'] . '/assets/security/' . $signature['signature']);
         $sig = base64_encode($sig);
 
         array_push($signatures, substr($sig, rand(0, strlen($sig) - 62), 60));

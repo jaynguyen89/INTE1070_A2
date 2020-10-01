@@ -1,9 +1,9 @@
 <?php
 
-//$signers = array_key_exists('signers', $_GET) ? $_GET['signers'] : 3;
-//
-//if ($signers != 1) echo json_encode(compute_keys_multi($signers));
-//else echo json_encode(compute_keys_single());
+$signers = array_key_exists('signers', $_GET) ? $_GET['signers'] : 0;
+
+if ($signers > 1) echo json_encode(compute_keys_multi($signers));
+If ($signers == 1) echo json_encode(compute_keys_single());
 
 
 function compute_keys_multi($signers = 3) {
@@ -22,32 +22,25 @@ function compute_keys_multi($signers = 3) {
             $second_key = $initial_keys[1];
         }
 
+        array_push($keys, $first_key);
+        array_push($keys, $second_key);
+
         $n = $prime_pair[0] * $prime_pair[1];
         $o = ($prime_pair[0] - 1) * ($prime_pair[1] - 1);
 
-        $d_prod = compute_product($keys);
-        $d = compute_d($d_prod, $o);
+        $d = compute_d($first_key * $second_key, $o);
 
-        $d_divisors = get_distinct_divisors_of($d);
+        $d_divisors = get_divisors_of($d);
+        $d_divisors = array_diff($d_divisors, array(1, $d));
 
         if (count($d_divisors) < $signers - 1)
             continue;
 
-        array_push($keys, $first_key);
-        array_push($keys, $second_key);
+        $third_key = $d_divisors[rand(1, count($d_divisors) - 2)];
+        $fourth_key = $d / $third_key;
 
-        if (count($d_divisors) == $signers - 1) {
-            array_push($keys, $d_divisors[0]);
-            array_push($keys, $d_divisors[1]);
-        }
-        else {
-            $third_key = 1;
-            for ($i = 0; $i < count($d_divisors) - 1; $i++)
-                $third_key *= $d_divisors[$i];
-
-            array_push($keys, $third_key);
-            array_push($keys, $d_divisors[count($d_divisors) - 1]);
-        }
+        array_push($keys, $third_key);
+        array_push($keys, $fourth_key);
 
         $pubkey_index = rand(0, 3);
         $rsa_keys['pub']['key'] = $keys[$pubkey_index];

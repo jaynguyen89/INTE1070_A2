@@ -10,5 +10,5 @@ session_destroy();
  
 // Redirect to login page
 
-header("location: /inte2/index.html");
+header("location: /index.html");
 exit;

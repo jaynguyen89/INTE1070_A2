@@ -49,7 +49,7 @@ if ($count > 0) {
     if (!$data['is_owner']) header('location: home.php');
     else {
         $_SESSION['public_key'] = $data['public_key'];
-        header('location: /inte2/admin/admin.php');
+        header('location: /admin/admin.php');
     }
 } else {
     // Display an error message if password is not valid
