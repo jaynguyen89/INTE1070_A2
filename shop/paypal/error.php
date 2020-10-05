@@ -18,7 +18,7 @@ $failure = array_key_exists('failure', $_SESSION) ? $_SESSION['failure'] : null;
 
     <title>INTE1070</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Balsamiq+Sans&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" />
@@ -37,7 +37,7 @@ $failure = array_key_exists('failure', $_SESSION) ? $_SESSION['failure'] : null;
     <h2 style="margin-top: 2rem;">Hi, <?php echo $_SESSION["first_name"]." ".$_SESSION["last_name"]; ?></h2>
     <h5>Something went wrong...</h5>
     <hr style="border: 1px solid #2e87e6; width: 35%;" />
-    <?php echo $_SESSION['charge']; ?>
+
     <div class="row">
         <div class="alert alert-warning" role="alert">
             <h4>What happened...</h4>
