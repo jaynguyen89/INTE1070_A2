@@ -33,7 +33,7 @@ function verify_cheque($cheque_id) {
                     $public_keys = json_decode($data['public_keys'], true);
 
                     $plain = bcpowmod($signature, $public_keys['key'], $public_keys['n']);
-                    return $plain == $amount ? 'success' : 'failed';
+                    return $plain == $amount * 100 ? 'success' : 'failed';
                 }
             }
         }

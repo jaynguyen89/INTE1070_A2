@@ -117,23 +117,23 @@ else
                                     reference_id : '<?php echo $order_number; ?>',
                                     amount : {
                                         currency_code : 'AUD',
-                                        value : '<?php echo $grand_total + 8.95; ?>',
-                                        breakdown : {
-                                            item_total : {
-                                                currency_code: 'AUD',
-                                                value: '<?php echo round($grand_total / 1.1, 2); ?>'
-                                            },
-                                            shipping : {
-                                                currency_code: 'AUD',
-                                                value: '8.95'
-                                            },
-                                            tax_total : {
-                                                currency_code: 'AUD',
-                                                value: '<?php echo round(round($grand_total / 1.1, 2) * 0.1, 2); ?>'
-                                            }
-                                        }
-                                    },
-                                    items : orderItems,
+                                        value : '<?php echo $grand_total + 8.95; ?>'//,
+                                        //breakdown : {
+                                        //    item_total : {
+                                        //        currency_code: 'AUD',
+                                        //        value: '<?php //echo round($grand_total / 1.1, 2); ?>//'
+                                        //    },
+                                        //    shipping : {
+                                        //        currency_code: 'AUD',
+                                        //        value: '8.95'
+                                        //    },
+                                        //    tax_total : {
+                                        //        currency_code: 'AUD',
+                                        //        value: '<?php //echo round(round($grand_total / 1.1, 2) * 0.1, 2); ?>//'
+                                        //    }
+                                        //}
+                                    }//,
+                                    //items : orderItems,
                                 }]
                             });
                         },

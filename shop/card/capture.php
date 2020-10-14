@@ -2,9 +2,7 @@
 header('Access-Control-Allow-Origin: *');
 require '../../vendor/autoload.php';
 
-use Stripe\Charge;
 use Stripe\Checkout\Session;
-use Stripe\Customer;
 use Stripe\Exception\ApiErrorException;
 use Stripe\Stripe;
 

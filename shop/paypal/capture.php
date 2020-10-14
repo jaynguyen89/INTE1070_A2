@@ -37,16 +37,16 @@ if ($paypal_order_id && $authId) {
     curl_close($access_token_request);
 
     //User has authorized a payment for the order, verify the payment authorization
-    $order_verification_url = 'https://api.sandbox.paypal.com/v2/checkout/orders/'.$paypal_order_id.'/';
-    $order_verification_request = curl_init();
+    $payment_capture_url = 'https://api.sandbox.paypal.com/v2/checkout/orders/'.$paypal_order_id.'/';
+    $payment_capture_request = curl_init();
 
-    curl_setopt($order_verification_request, CURLOPT_URL, $order_verification_url);
-    curl_setopt($order_verification_request,CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($order_verification_request, CURLOPT_HTTPHEADER, ['Content-Type: application/json', 'Authorization: Bearer '.$access_token]);
+    curl_setopt($payment_capture_request, CURLOPT_URL, $payment_capture_url);
+    curl_setopt($payment_capture_request,CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($payment_capture_request, CURLOPT_HTTPHEADER, ['Content-Type: application/json', 'Authorization: Bearer '.$access_token]);
 
-    $response = curl_exec($order_verification_request);
+    $response = curl_exec($payment_capture_request);
     $json_response = json_decode($response, true);
-    curl_close($order_verification_request);
+    curl_close($payment_capture_request);
 
     $payment_auth = $json_response['purchase_units'][0]['payments']['authorizations'][0];
 

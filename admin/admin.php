@@ -172,7 +172,7 @@ function display_expense($expense) {
             <tr><td colspan="5"><div class="text-center">No expense of this type.</div></td></tr>
         <?php } else foreach ($pending_expenses as $expense) display_expense($expense); ?>
 
-        <tr><td colspan="5" class="text-center bg-info">The expenses that all owners have signed and pending review.</td></tr>
+        <tr><td colspan="5" class="text-center bg-info">The expenses that all owners have signed and pending Bank review.</td></tr>
         <?php if (empty($in_review_expenses)) { ?>
             <tr><td colspan="5"><div class="text-center">No expense of this type.</div></td></tr>
         <?php } else foreach ($in_review_expenses as $expense) display_expense($expense); ?>

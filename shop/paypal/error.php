@@ -8,6 +8,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
 }
 
 $failure = array_key_exists('failure', $_SESSION) ? $_SESSION['failure'] : null;
+$data = json_decode($_SESSION['checkout_data'], true);
 ?>
 
 <!DOCTYPE html>
@@ -72,8 +73,8 @@ $failure = array_key_exists('failure', $_SESSION) ? $_SESSION['failure'] : null;
                 } ?>
 
             <br/>
-            <p>Error name: <b><?php echo $failure; ?></b></p>
-            <p>Order Number: <b><?php echo $_SESSION['order'] ?></b></p>
+            <p>Error name: <b><?php echo $failure ? $failure : 'PAYPAL_DATA_MISMATCHED'; ?></b></p>
+            <p>Order Number: <b><?php echo $failure ? $_SESSION['order'] : $data['order_number']; ?></b></p>
         </div>
     </div>
 </div>

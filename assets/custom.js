@@ -203,8 +203,6 @@ function generateCryptoKeys(isChanging = false) {
 
 function handleCryptoKeysResponse(privateKey) {
     $('#generate-keys-btn').remove();
-    $('#crypto-keys-warning').remove();
-
     download('private.pem', privateKey);
 
     $('#crypto-keys-col').html('' +
@@ -222,15 +220,7 @@ function handleCryptoKeysResponse(privateKey) {
 function removeCryptoKeys() {
     $('#crypto-keys-show').remove();
     $('#crypto-keys-col').html('' +
-        '<div class="alert alert-warning" id="crypto-keys-warning">' +
-            '<h5><i class="fas fa-exclamation-triangle"></i>&nbsp;Caution! Make sure you are not being watched.</h5>' +
-            '<p class="subtitle"><i class="fas fa-hand-point-right"></i>&nbsp;Are you in a public place, and/or using a public wifi network?</p>' +
-            '<p class="subtitle"><i class="fas fa-hand-point-right"></i>&nbsp;Is there any camera around you, including CCTVs, video recorders and mobile phones?</p>' +
-            '<p class="subtitle"><i class="fas fa-hand-point-right"></i>&nbsp;Is there any other people around you?</p>' +
-            '<p class="subtitle">' +
-                'If none of the above is true, then it would be safe to "Change" your keys.' +
-            '</p>' +
-        '</div>' +
+        '<p class="subtitle text-success">You have generated your public-private keys pair before. Click the below button if you wish to change it.</p>' +
         '<div class="btn btn-primary" style="width: 20%" id="generate-keys-btn" onclick="generateCryptoKeys(true)">Change</div>');
 }
 

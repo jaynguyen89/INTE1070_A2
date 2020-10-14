@@ -23,7 +23,7 @@ $result = mysqli_query($link, $query);
 $message = null;
 if ($result) {
     $data = mysqli_fetch_array($result, MYSQLI_ASSOC);
-    $message = $data['payee'].' '.number_format((float) $data['amount'], 2);
+    $message = strtoupper($data['payee']).' '.number_format((float) $data['amount'], 2);
 }
 else $error = true;
 
@@ -46,6 +46,7 @@ if (!$error) {
         $sig = file_get_contents($_SERVER['DOCUMENT_ROOT'] . '/inte2/assets/security/' . $signature);
 
         $verified = openssl_verify($message, $sig, $pbk, "sha256WithRSAEncryption");
+        if (!$verified) break;
     }
 
     echo !$error ? ($verified ? 'success' : 'failed') : 'error';

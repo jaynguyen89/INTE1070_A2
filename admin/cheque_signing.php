@@ -6,7 +6,7 @@ require_once '../db_config.php';
 global $link;
 
 function sign_cheque_personally($payee, $amount, $privateKey) {
-    $message = $payee . ' ' .number_format((float) $amount, 2);
+    $message = strtoupper($payee).' '.number_format((float) $amount, 2);
 
     $signature = '';
     openssl_sign($message, $signature, $privateKey, OPENSSL_ALGO_SHA256);
@@ -30,7 +30,7 @@ function sign_cheque_multisig($cheque_id) {
     $query = 'SELECT COUNT(*) AS counting FROM agreements WHERE expense_id = '.$cheque_id;
     $result = mysqli_fetch_array(mysqli_query($link, $query), MYSQLI_ASSOC);
 
-    if ($result['counting'] == 0) {
+    if ($result['counting'] == 0) { //first signature when cheque is being created
         $keys = compute_keys_multi();
 
         if ($keys) {
