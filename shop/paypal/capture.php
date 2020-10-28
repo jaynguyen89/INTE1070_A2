@@ -17,7 +17,7 @@ $user_id = $_SESSION['user_id'];
 $paypal_order_id = array_key_exists('orderId', $_POST) ? $_POST['orderId'] : null;
 $authId = array_key_exists('authId', $_POST) ? $_POST['authId'] : null;
 
-if ($paypal_order_id && $authId) {
+if ($paypal_order_id && $authId) { //customer have authorised the payment, now capture it
     //Get access token to send REST requests to Paypal API
     $oauth_url = 'https://api.sandbox.paypal.com/v1/oauth2/token';
     $access_token_request = curl_init();
@@ -31,12 +31,12 @@ if ($paypal_order_id && $authId) {
     curl_setopt($access_token_request, CURLOPT_POSTFIELDS, 'grant_type=client_credentials');
 
     $response = curl_exec($access_token_request);
-    $json_response = json_decode($response, true);
+    $json_response = json_decode($response, true); //access token response
 
     $access_token = $json_response['access_token'];
     curl_close($access_token_request);
 
-    //User has authorized a payment for the order, verify the payment authorization
+    //User has authorized a payment for the order, verify the authorization
     $payment_capture_url = 'https://api.sandbox.paypal.com/v2/checkout/orders/'.$paypal_order_id.'/';
     $payment_capture_request = curl_init();
 
@@ -48,8 +48,10 @@ if ($paypal_order_id && $authId) {
     $json_response = json_decode($response, true);
     curl_close($payment_capture_request);
 
+    //received a response from Paypal about the authorization
     $payment_auth = $json_response['purchase_units'][0]['payments']['authorizations'][0];
 
+    //So check the response status for the validity of auth
     if ($json_response['status'] == 'COMPLETED' && $payment_auth['status'] == 'CREATED' &&
         strtotime($payment_auth['expiration_time']) > time()
     ) {

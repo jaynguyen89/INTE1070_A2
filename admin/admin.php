@@ -19,18 +19,19 @@ unset($_SESSION['login_message']);
 $user_id = $_SESSION['user_id'];
 $create_result = false;
 
+//Creating expense is same as creating a cheque, the owner who create it will be first to sign it
 if (array_key_exists('create-expense', $_POST)) {
     $query = 'INSERT INTO expenses (user_id, payee, amount, in_words, description)
               VALUES ('.$user_id.', \''.$_POST['payee'].'\', '.$_POST['amount'].', \''.$_POST['in-words'].'\', \''.$_POST['description'].'\');';
 
-    if (mysqli_query($link, $query)) {
+    if (mysqli_query($link, $query)) { //save the chequue to database
         $expense_id = mysqli_insert_id($link);
-        $multisig = array_key_exists('multisig', $_POST) && $_POST['multisig'] == 'on';
+        $multisig = array_key_exists('multisig', $_POST) && $_POST['multisig'] == 'on'; //form data: sign cheque with separate or combined signatures
 
         $signature = $multisig ? sign_cheque_multisig($expense_id) : sign_cheque_separately();
         $create_result = $signature != null;
 
-        if ($create_result) {
+        if ($create_result) { //cheque was signed successfully, then save the signatures as agreements
             if ($multisig)
                 $query = 'INSERT INTO agreements (signed_id, expense_id, key_id, signature)
                           VALUES ('.$_SESSION['user_id'].', '.$expense_id.', '.$signature['key_id'].', \''.$signature['sig'].'\');';
@@ -38,7 +39,7 @@ if (array_key_exists('create-expense', $_POST)) {
                 $query = 'INSERT INTO agreements (signed_id, expense_id, signature)
                           VALUES ('.$_SESSION['user_id'].', '.$expense_id.', \''.$signature.'\');';
 
-            if (mysqli_query($link, $query)) {
+            if (mysqli_query($link, $query)) { //data saved, clear form POSTed data
                 if (array_key_exists('signKey', $_FILES) && $_FILES['signKey']['tmp_name']) {
                     unlink($_FILES['signKey']['tmp_name']);
                     unset($_FILES['signKey']);
@@ -52,6 +53,7 @@ if (array_key_exists('create-expense', $_POST)) {
     else unlink($_FILES['signKey']['tmp_name']);
 }
 
+//The below codes are to read the cheques from database and classify them to display in table
 $query = 'SELECT COUNT(*) as owner_count FROM users WHERE is_owner = true';
 $result = mysqli_fetch_array(mysqli_query($link, $query), MYSQLI_ASSOC);
 
@@ -93,7 +95,7 @@ function filter_expenses($expense) {
     else array_push($in_review_expenses, $expense);
 }
 
-function sign_cheque_separately() {
+function sign_cheque_separately() { //call the appropriate function in cheque_signing.php to sign cheque
     $private_key = array_key_exists('signKey', $_FILES) ? file_get_contents($_FILES['signKey']['tmp_name']) : null;
     return $private_key ? sign_cheque_personally($_POST['payee'], $_POST['amount'], $private_key) : null;
 }

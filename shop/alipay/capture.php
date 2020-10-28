@@ -34,7 +34,7 @@ Stripe::setApiKey('sk_test_51HQDZND2FG7NncIE67ajAx6FuANOhZQQVUrzM1j7CKk43zOzwXhm
 
 $charge = null;
 try {
-    $charge = Charge::create(array(
+    $charge = Charge::create(array( //capture the payment that user have authorized
         'amount' => ($grand_total + 8.95) * 100,
         'currency' => 'AUD',
         'source' => $aliToken,
@@ -46,7 +46,7 @@ try {
     header('location: error.php');
 }
 
-
+//cheque payment capture for the preferred statuses before updating payments, shopping cart and products in database
 if ($charge && $charge['amount_refunded'] == 0 && $charge['captured'] && !$charge['disputed'] &&
     $charge['failure_code'] == null && empty($charge['fraud_details']) && $charge['paid'] && $charge['status'] == 'succeeded'
 ) {

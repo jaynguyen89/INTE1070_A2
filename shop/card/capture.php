@@ -56,7 +56,7 @@ foreach ($items as $item) {
 
 $checkout_session = null;
 try {
-    $checkout_session = Session::create([
+    $checkout_session = Session::create([ //create a checkout session for user, in which they need to authorize payment
         'payment_method_types' => ['card'],
         'line_items' => [[
             'price_data' => [
@@ -69,8 +69,8 @@ try {
             'quantity' => $countAll,
         ]],
         'mode' => 'payment',
-        'success_url' => 'http://localhost:81/inte2/shop/card/success.php',
-        'cancel_url' => 'http://localhost:81/inte2/shop/card/checkout.php',
+        'success_url' => 'http://localhost:81/inte2/shop/card/success.php', //endpoints for us to continue handling the payment
+        'cancel_url' => 'http://localhost:81/inte2/shop/card/checkout.php', //after customer have authorized it
     ]);
 } catch (ApiErrorException $e) {
     $_SESSION['failure'] = 'charge_failed';

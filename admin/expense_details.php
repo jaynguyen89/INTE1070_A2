@@ -13,24 +13,32 @@ require_once 'cheque_signing.php';
 require_once '../db_config.php';
 global $link;
 
+//Expense details is the page where owners that are not the one creating the cheque can sign it
+//If they already sign the cheque, they won't see the button to sign it
+//To sign cheque separately, they have to upload their private key file
+//To sign cheque by combined signature, they just need to click a button
+
+
 $expense_id = array_key_exists('id', $_GET) ? $_GET['id'] : null;
 $user_id = $_SESSION['user_id'];
 
+//read the cheque to display details
 $query = 'SELECT * FROM expenses WHERE id = '.$expense_id;
 $result = mysqli_query($link, $query);
 
 $expense = mysqli_fetch_array($result, MYSQLI_ASSOC);
 
+//user submit a form specifying that they sign the cheque
 $sign_result = false;
 if (array_key_exists('sign_expense', $_POST)) {
 
-    if (!$expense['multisig']) {
+    if (!$expense['multisig']) { //form data telling that user sign by combined or separate signature
         $private_key = file_get_contents($_FILES['signKey']['tmp_name']);
         $signature = sign_cheque_personally($expense['payee'], $expense['amount'], $private_key);
     }
     else $signature = sign_cheque_multisig($expense_id);
 
-    if ($signature) {
+    if ($signature) { //sign cheque successfully, then save the agreements and update the keys
         if (!$expense['multisig'])
             $query = 'INSERT INTO agreements (signed_id, expense_id, signature)
                       VALUES ('.$user_id.', '.$expense_id.', \''.$signature.'\');';
@@ -56,6 +64,7 @@ if (array_key_exists('sign_expense', $_POST)) {
     if (!$sign_result && array_key_exists('signKey', $_FILES) && $_FILES['signKey']['tmp_name']) unlink($_FILES['signKey']['tmp_name']);
 }
 
+//The codes below are to process necessary data to display the cheque
 $query = 'SELECT A.*, U.first_name, U.last_name, U.username FROM agreements A, users U WHERE expense_id = '.$expense_id;
 $result = mysqli_query($link, $query);
 

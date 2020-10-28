@@ -5,15 +5,17 @@ $signers = array_key_exists('signers', $_GET) ? $_GET['signers'] : 0;
 if ($signers > 1) echo json_encode(compute_keys_multi($signers));
 If ($signers == 1) echo json_encode(compute_keys_single());
 
-
+//compute the keys for 3 owners to sign cheque using combined signature
+//for 3 owners, we need 4 keys, one of which will be the public key for the bank verifier
 function compute_keys_multi($signers = 3) {
     if ($signers < 3 || $signers > 5) return null;
-    $rsa_keys = array('pub' => array(), 'priv' => array());
+    $rsa_keys = array('pub' => array(), 'priv' => array()); //the response
 
     while (true) {
         $keys = array();
         $prime_pair = get_two_random_primes(get_prime_numbers(500));
 
+        //first and second keys are selected randomly, given that they are different
         $first_key = 1;
         $second_key = 1;
         while (in_array($first_key, $prime_pair) || in_array($second_key, $prime_pair) || $first_key == $second_key) {
@@ -25,24 +27,26 @@ function compute_keys_multi($signers = 3) {
         array_push($keys, $first_key);
         array_push($keys, $second_key);
 
+        //Now compute the 2 remaining keys, so I compute a number d that have key1 * key2 * d = 1 mod(o)
+        //then I get the divisors of d for each remaining key given that all product of remaining keys equals d
         $n = $prime_pair[0] * $prime_pair[1];
         $o = ($prime_pair[0] - 1) * ($prime_pair[1] - 1);
 
         $d = compute_d($first_key * $second_key, $o);
 
         $d_divisors = get_divisors_of($d);
-        $d_divisors = array_diff($d_divisors, array(1, $d));
+        $d_divisors = array_diff($d_divisors, array(1, $d)); //remove 1 and d in divisors
 
-        if (count($d_divisors) < $signers - 1)
+        if (count($d_divisors) < $signers - 1) //d is a prime number, so have to redo the computation
             continue;
 
-        $third_key = $d_divisors[rand(1, count($d_divisors) - 2)];
-        $fourth_key = $d / $third_key;
+        $third_key = $d_divisors[rand(1, count($d_divisors) - 2)]; //select random divisor to be third key
+        $fourth_key = $d / $third_key; //calculate the remaining key
 
         array_push($keys, $third_key);
         array_push($keys, $fourth_key);
 
-        $pubkey_index = rand(0, 3);
+        $pubkey_index = rand(0, 3); //select a random key to be public key
         $rsa_keys['pub']['key'] = $keys[$pubkey_index];
 
         foreach ($keys as $v) {
@@ -57,6 +61,7 @@ function compute_keys_multi($signers = 3) {
     return $rsa_keys;
 }
 
+//Generate the keys for signing cheque separately
 function compute_keys_single() {
     $e = 0;
     $p = 0;
@@ -76,7 +81,7 @@ function compute_keys_single() {
         $d = compute_d($e, $o);
     }
 
-    return array('d' => $d, 'n' => $n, 'e' => $e);
+    return array('d' => $d, 'n' => $n, 'e' => $e); //the final keys
 }
 
 function compute_e($o) { //co-prime to o

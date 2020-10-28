@@ -6,24 +6,25 @@ global $link;
 $cheque_id = array_key_exists('chequeId', $_GET) ? $_GET['chequeId'] : 0;
 if ($cheque_id) echo verify_cheque($cheque_id);
 
-function sign_cheque($plain, $key, $n) {
+function sign_cheque($plain, $key, $n) { //sign cheque by combined signature method
     return bcpowmod($plain, $key, $n);
 }
 
+//verify cheque for combined signature
 function verify_cheque($cheque_id) {
     global $link;
     $query = 'SELECT DISTINCT(A.signature), A.key_id, E.amount FROM agreements A, expenses E
               WHERE expense_id = '.$cheque_id.' AND A.expense_id = E.id;';
-    $result = mysqli_query($link, $query);
+    $result = mysqli_query($link, $query); //real cheque data to get the message and the signature
 
     if ($result) {
         $data = mysqli_fetch_array($result, MYSQLI_ASSOC);
 
         if ($data) {
-            $signature = intval($data['signature']);
-            $amount = $data['amount'];
+            $signature = intval($data['signature']); //signature to verify
+            $amount = $data['amount']; //message to compare
 
-            $query = 'SELECT public_keys FROM multisig_keys WHERE id = '.$data['key_id'];
+            $query = 'SELECT public_keys FROM multisig_keys WHERE id = '.$data['key_id']; //get keys from TTP
             $result = mysqli_query($link, $query);
 
             if ($result) {
@@ -32,7 +33,7 @@ function verify_cheque($cheque_id) {
                 if ($data) {
                     $public_keys = json_decode($data['public_keys'], true);
 
-                    $plain = bcpowmod($signature, $public_keys['key'], $public_keys['n']);
+                    $plain = bcpowmod($signature, $public_keys['key'], $public_keys['n']); //verification
                     return $plain == $amount * 100 ? 'success' : 'failed';
                 }
             }

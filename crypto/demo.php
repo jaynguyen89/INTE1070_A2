@@ -381,10 +381,10 @@
                     <div class="col-sm-12" style="margin-top: 30px;">
                         <div class="instruction">Enter Peer end point to connect.</div>
                         <input type="text" class="form-control" placeholder="ws://localhost:12345" id="peer" />
-                        <button class="btn btn-primary" style="margin-top: 10px;" onclick="getTransactionPool();">Connect Peer</button>
+                        <button class="btn btn-primary" style="margin-top: 10px;" onclick="connectPeer();">Connect Peer</button>
 
                         <script type="text/javascript">
-                            function getTransactionPool() {
+                            function connectPeer() {
                                 $('#url-query').html("http://localhost:3001/connect-peer" + "\n" + JSON.stringify({ 'peer': $('#peer').val() }));
 
                                 if ($('#peer').val().length === 0) {
@@ -396,7 +396,7 @@
                                     url: "http://localhost:3001/connect-peer",
                                     crossOrigin: true,
                                     contentType: 'application/json',
-                                    method: 'GET',
+                                    method: 'POST',
                                     headers: { 'Access-Control-Allow-Origin':'*' },
                                     data: JSON.stringify({ 'peer': $('#peer').val() }),
                                     success: function(response) {
@@ -412,10 +412,10 @@
                     </div>
 
                     <div class="col-sm-12" style="margin-top: 30px;">
-                        <button class="btn btn-primary" style="margin-top: 10px;" onclick="getTransactionPool();">View Peers</button>
+                        <button class="btn btn-primary" style="margin-top: 10px;" onclick="getPeers();">View Peers</button>
 
                         <script type="text/javascript">
-                            function getTransactionPool() {
+                            function getPeers() {
                                 $('#url-query').html("http://localhost:3001/peers");
 
                                 $.ajax({
@@ -438,10 +438,10 @@
 
                     <div class="col-sm-12" style="margin-top: 30px;">
                         <div class="instruction">Close your Wallet: Wallet data will be deleted.</div>
-                        <button class="btn btn-primary" style="margin-top: 10px;" onclick="getTransactionPool();">Close Wallet</button>
+                        <button class="btn btn-primary" style="margin-top: 10px;" onclick="closeWallet();">Close Wallet</button>
 
                         <script type="text/javascript">
-                            function getTransactionPool() {
+                            function closeWallet() {
                                 $('#url-query').html("http://localhost:3001/close-wallet");
 
                                 $.ajax({
